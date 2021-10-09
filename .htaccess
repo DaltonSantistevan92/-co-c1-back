@@ -1,0 +1,15 @@
+Options All -Indexes
+
+RewriteEngine On
+
+<IfModule mod_rewrite.c>
+# Activar rewrite
+RewriteEngine on
+#ErrorDocument 404 http://localhost/hrns-orrala/backend/
+
+RewriteCond %{SCRIPT_FILENAME} !-d
+RewriteCond %{SCRIPT_FILENAME} !-f
+
+RewriteRule ^([-a-zA-Z0-9_/]+)$ index.php?url=$1
+
+</IfModule>
