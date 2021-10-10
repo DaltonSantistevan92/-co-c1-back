@@ -42,24 +42,23 @@ class UsuarioAccion
                 }else 
                 if($ruta == '/usuario/editar'){
                     Route::post('/usuario/editar', 'usuarioController@editar');
-                }
-                else {
+                }else 
+                if($ruta == '/usuario/eliminar'){
+                    Route::post('/usuario/eliminar', 'usuarioController@eliminar');
+                }else {
                     ErrorClass::e(404, "La ruta no existe");
                 }
                 break;
 
-           /*  case 'put':
+                /* case 'delete':
                     if ($params) {
-                        if ($ruta == '/usuario/editar') {
-                            Route::put('/usuario/editar/:id', 'usuarioController@editar', $params);
-                        } else {
-                            ErrorClass::e('400', 'No ha enviado parámetros por la url');
+                        if ($ruta == '/usuario/eliminar') {
+                            Route::delete('/usuario/eliminar/:id','usuarioController@eliminar', $params);
                         }
+                    } else {
+                        ErrorClass::e('400', 'No ha enviado parámetros por la url');
                     }
                 break; */
-
-            case 'delete':
-                break; 
         }
 
     }
