@@ -258,6 +258,7 @@ class UsuarioController
         $id = intval($usuRequest->id);
         $persona_id = intval($usuRequest->persona_id);
         $rol_id = intval($usuRequest->rol_id);
+        $usuario = ucfirst($usuRequest->usuario);
 
         $response = [];       
         $usu = Usuario::find($id);
@@ -265,6 +266,7 @@ class UsuarioController
             if($usu){
                 $usu->persona_id = $persona_id;
                 $usu->rol_id = $rol_id;
+                $usu->usuario = $usuario;
 
                 $persona = Persona::find($usu->persona_id);
                 $persona->nombres = ucfirst($usuRequest->nombres);
@@ -292,40 +294,32 @@ class UsuarioController
         echo json_encode($response);
     }
 
-
-    //put
-    public function editar2(Request $request, $params){
+    public function eliminar(Request $request){
         $this->cors->corsJson();
-        $usuRequest = $request->inputPut('usuario');
-        $id = intval($params['id']);
+        $usuarioRequest = $request->input('usuario');
+        $id = intval($usuarioRequest->id);
+
+        $usuario = Usuario::find($id);
         $response = [];
 
-        $dataUsuario = Usuario::find($id);
-        $per = $dataUsuario->persona;
-        $rol = $dataUsuario->rol;
-        
-        if($usuRequest){
-            if($per){
-                $per->cedula = $per->cedula;
-                $per->nombres = $usuRequest->nombres;
-                $per->apellidos = $usuRequest->apellidos;
-                $dataUsuario->usuario = $usuRequest->usuario;
-                $rol->cargo = $dataUsuario->rol->cargo; 
-                $rol->estado = 'A';
-                $dataUsuario->rol->save();
-            }
+        if($usuario){
+            $usuario->estado = 'I';
+            $usuario->save();
 
-
+            $response = [
+                'status' => true,
+                'mensaje' => 'Se ha eliminado el usuario', 
+            ];
         }else{
             $response = [
                 'status' => false,
-                'mensaje' => 'No hay datos...!!'
+                'mensaje' => 'No se ha podido eliminar el usuario', 
             ];
         }
-
-
+        echo json_encode($response);
     }
-
     
+    
+   
 
 }
