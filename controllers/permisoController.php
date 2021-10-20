@@ -1,4 +1,4 @@
-<?php
+<?php 
 
 require_once 'models/permisoModel.php';
 require_once 'models/menuModel.php';
@@ -19,7 +19,7 @@ class PermisoController
         echo "Metodo index de permisoController<br>";
     }
 
-    public function newPermiso($params)
+    public function newPermiso($params) 
     {
         $this->cors->corsJson();
         $id_rol = intval($params['id']);

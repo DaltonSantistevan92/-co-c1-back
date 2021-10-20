@@ -50,15 +50,6 @@ class UsuarioAccion
                 }
                 break;
 
-                /* case 'delete':
-                    if ($params) {
-                        if ($ruta == '/usuario/eliminar') {
-                            Route::delete('/usuario/eliminar/:id','usuarioController@eliminar', $params);
-                        }
-                    } else {
-                        ErrorClass::e('400', 'No ha enviado parámetros por la url');
-                    }
-                break; */
         }
 
     }

@@ -7,6 +7,7 @@ require_once 'app/error.php';
 require_once 'app/helper.php';
 require_once 'models/usuarioModel.php';
 require_once 'models/personaModel.php';
+require_once 'models/mecanicoModel.php';
 require_once 'controllers/personaController.php';
 require_once 'controllers/rolController.php';
 
@@ -30,7 +31,7 @@ class UsuarioController
     public function buscar($params)
     {
         $this->cors->corsJson();
-        $id = $params['id'];
+        $id = intval($params['id']);
         $usuario = Usuario::find($id);
         $response = [];
 
@@ -54,9 +55,9 @@ class UsuarioController
         echo json_encode($response);
     }
 
+
     public function guardar(Request $request)
     {
-
         $this->cors->corsJson();
         $user = $request->input('usuario');
         $response = [];
@@ -96,6 +97,22 @@ class UsuarioController
                 ];
             } else {
                 if ($usuario->save()) {
+                    //verificar si ahi un rol mecanico
+                    if($usuario->rol_id == 2){
+                        //Crear un mecanico y guardar
+                        $mecanico = new Mecanico;
+                        $mecanico->persona_id = $id_pers;
+                        $mecanico->estado= 'A';
+                        $mecanico->save();
+
+
+                    }else if($usuario->rol_id == 3){ //verifica si ahi rol cliente
+                        //Crear un cliente y guardar
+                        $cliente = new Cliente;
+                        $cliente->persona_id = $id_pers;
+                        $cliente->estado = 'A';
+                        $cliente->save();
+                    }
                     $response = [
                         'status' => true,
                         'mensaje' => 'Se ha guardado el usuario',
@@ -186,7 +203,10 @@ class UsuarioController
     public function dataTable()
     {
         $this->cors->corsJson();
-        $usuarios = Usuario::where('estado', 'A')->orderBy('usuario')->get();
+
+        //$usuarios = Usuario::where('estado', 'A')->orderBy('usuario')->get();
+        $usuarios = Usuario::where('rol_id','<>',3)->orderBy('usuario')->get();
+
 
         $data = [];    $i = 1;
 
