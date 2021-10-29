@@ -174,7 +174,7 @@ class ClienteController
         $texto = ucfirst($params['texto']);
         $response = [];
 
-        $sql = "SELECT c.id, p.cedula, p.nombres,p.apellidos FROM personas p
+        $sql = "SELECT c.id, p.cedula, p.nombres,p.apellidos,p.correo,p.telefono FROM personas p
         INNER JOIN clientes c ON c.persona_id = p.id
         WHERE p.estado = 'A' and (p.cedula LIKE '$texto%' OR p.nombres LIKE '%$texto%' OR p.apellidos LIKE '%$texto%')";
 
