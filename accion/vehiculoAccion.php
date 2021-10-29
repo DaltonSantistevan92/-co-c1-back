@@ -27,8 +27,13 @@ class VehiculoAccion
                 }else
                 if ($ruta == '/vehiculo/cliente') {
                     Route::get('/vehiculo/cliente', 'vehiculoController@clienteVehiculo');
-                }
-                else {
+                }else
+                if ($ruta == '/vehiculo/buscarClienteVehiculo' && $params) {
+                    Route::get('/vehiculo/buscarClienteVehiculo/:id_cliente', 'vehiculoController@buscarClienteVehiculo', $params);
+                }else
+                if ($ruta == '/vehiculo/buscarxplaca' && $params) {
+                    Route::get('/vehiculo/buscarxplaca/:id', 'vehiculoController@buscarxplaca', $params);
+                }else {
                     ErrorClass::e('404', 'No se encuentra la url');
                 }
                 break;

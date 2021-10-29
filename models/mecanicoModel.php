@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 class Mecanico extends Model
 {
     protected $table = "mecanicos";
-    protected $fillable = ['persona_id','estado'];
+    protected $fillable = ['persona_id','status','estado'];
     public $timestamps = false;
 
     //Muchos a uno --- uno a muchos(Inverso)

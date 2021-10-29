@@ -6,7 +6,7 @@ require_once 'core/conexion.php';
 require_once 'core/params.php';
 require_once 'models/vehiculoModel.php';
 require_once 'models/clienteVehiculoModel.php';
-//require_once 'models/clienteModel.php';
+require_once 'models/clienteModel.php';
 //require_once 'models/ordenModel.php';
 
 class VehiculoController
@@ -71,8 +71,8 @@ class VehiculoController
 
         if ($nuevo_disponible == 'S' || $nuevo_disponible == 'N') {
             $vehiculos = Vehiculo::where('disponible', $nuevo_disponible)->get();
-            
-            foreach($vehiculos as $ve){
+
+            foreach ($vehiculos as $ve) {
                 $ve->marca;
             }
 
@@ -81,7 +81,6 @@ class VehiculoController
                 'mensaje' => 'Vehiculos encontrados',
                 'vehiculos' => $vehiculos,
             ];
-
         } else {
             $response = [
                 'status' => false,
@@ -152,7 +151,8 @@ class VehiculoController
     public function dataTable()
     {
         $vehiculos = Vehiculo::where('estado', 'A')->get();
-        $data = [];     $i = 1;
+        $data = [];
+        $i = 1;
         foreach ($vehiculos as $v) {
 
             $botones = '<div class="btn-group">
@@ -183,49 +183,49 @@ class VehiculoController
         echo json_encode($result);
     }
 
-    public function editar(Request $request){
+    public function editar(Request $request)
+    {
         $this->cors->corsJson();
         $vehiculoRequest = $request->input('vehiculo');
         $id = intval($vehiculoRequest->id);
         $marca_id = intval($vehiculoRequest->marca_id);
-        $placa = strtoupper($vehiculoRequest->placa);       
+        $placa = strtoupper($vehiculoRequest->placa);
         $modelo = ucfirst($vehiculoRequest->modelo);
-        $kilometraje = $vehiculoRequest->kilometraje;       
+        $kilometraje = $vehiculoRequest->kilometraje;
         $response = [];
 
         $vehiculo = Vehiculo::find($id);
-    
-        if($vehiculoRequest){
-            if($vehiculo){
+
+        if ($vehiculoRequest) {
+            if ($vehiculo) {
                 $vehiculo->marca_id = $marca_id;
                 $vehiculo->placa = $placa;
                 $vehiculo->modelo = $modelo;
                 $vehiculo->kilometraje = $kilometraje;
                 $vehiculo->save();
-  
+
                 $response = [
                     'status' => true,
                     'mensaje' => 'El Vehículo se ha actualizado',
                     'data' => $vehiculo,
                 ];
-            }else {
+            } else {
                 $response = [
                     'status' => false,
                     'mensaje' => 'No se puede actualizar el vehículo',
                 ];
             }
-        }else{
+        } else {
             $response = [
                 'status' => false,
                 'mensaje' => 'No hay datos...!!'
             ];
         }
         echo json_encode($response);
-        
-
     }
 
-    public function eliminar(Request $request){
+    public function eliminar(Request $request)
+    {
         $this->cors->corsJson();
         $vehiculoRequest = $request->input('vehiculo');
         $id = intval($vehiculoRequest->id);
@@ -233,18 +233,18 @@ class VehiculoController
         $vehiculo = Vehiculo::find($id);
         $response = [];
 
-        if($vehiculo){
+        if ($vehiculo) {
             $vehiculo->estado = 'I';
             $vehiculo->save();
 
             $response = [
                 'status' => true,
-                'mensaje' => 'Se ha eliminado el vehículo', 
+                'mensaje' => 'Se ha eliminado el vehículo',
             ];
-        }else{
+        } else {
             $response = [
                 'status' => false,
-                'mensaje' => 'No se ha podido eliminar el vehiculo', 
+                'mensaje' => 'No se ha podido eliminar el vehiculo',
             ];
         }
         echo json_encode($response);
@@ -286,7 +286,6 @@ class VehiculoController
                         'mensaje' => 'Se ha asignado el vehículo',
                         'vehiculo' => $clienteVehiculo,
                     ];
-
                 } else {
                     $response = [
                         'status' => false,
@@ -294,9 +293,7 @@ class VehiculoController
                         'vehiculo' => null,
                     ];
                 }
-
             }
-
         } else {
             $response = [
                 'status' => false,
@@ -306,7 +303,6 @@ class VehiculoController
         }
 
         echo json_encode($response);
-
     }
 
     public function buscarVehiculo($params)
@@ -337,24 +333,25 @@ class VehiculoController
         echo json_encode($response);
     }
 
-    public function clienteVehiculo(){
+    public function clienteVehiculo()
+    {
         $this->cors->corsJson();
-        $clivehi = Cliente_Vehiculo::where('estado','A')->get();
+        $clivehi = Cliente_Vehiculo::where('estado', 'A')->get();
         $response = [];
-        
-        foreach($clivehi as $item){
+
+        foreach ($clivehi as $item) {
             $item->id;
             $item->cliente->persona;
             $item->vehiculo->marca;
         }
 
-        if($clivehi){
+        if ($clivehi) {
             $response = [
                 'status' => true,
                 'mensaje' => 'Existen Datos',
                 'datos' => $clivehi
             ];
-        }else{
+        } else {
             $response = [
                 'status' => false,
                 'mensaje' => 'No existen Datos',
@@ -362,10 +359,10 @@ class VehiculoController
             ];
         }
         echo json_encode($response);
-
     }
 
-    public function eliminarClienteVehiculo(Request $request){
+    public function eliminarClienteVehiculo(Request $request)
+    {
         $this->cors->corsJson();
         $datos = $request->input('datos');
         $id = intval($datos->id);
@@ -375,23 +372,23 @@ class VehiculoController
 
         $datos = Cliente_Vehiculo::find($id);
 
-        if($datos){
+        if ($datos) {
 
             $datos->cliente_id = $datos->cliente_id;
             $datos->vehiculo_id = $datos->vehiculo_id;
-             
+
             //actualizar vehiculo
             $vehiculo = Vehiculo::find($datos->vehiculo_id);
             $vehiculo->disponible = 'S';
             $vehiculo->save();
-            $datos->delete(); 
+            $datos->delete();
 
             $response = [
                 'status' => true,
                 'mensaje' => 'Se ha eliminado el cliente con su vehículo',
                 'vehiculo' => $datos,
             ];
-        }else{
+        } else {
             $response = [
                 'status' => false,
                 'mensaje' => 'No se ha eliminado el cliente con su vehículo',
@@ -399,6 +396,60 @@ class VehiculoController
             ];
         }
         echo json_encode($response);
+    }
+
+
+    public function buscarClienteVehiculo($params)
+    {
+        $this->cors->corsJson();
+        $id_cliente = intval($params['id_cliente']);
+        $sql = "SELECT vehiculo_id, (select vehiculos.placa from vehiculos where vehiculos.id = cv.vehiculo_id) as placa FROM clientes_vehiculos cv WHERE cv.cliente_id = $id_cliente";
+        $array = $this->conexion->database::select($sql);
+
+        $cliente = Cliente::find($id_cliente);
+        $response = [];
+
+        if ($cliente == null) {
+            $response = [
+                'status' => false,
+                'mensaje' => 'El cliente no existe',
+                'vehiculos' => null,
+            ];
+        } else {
+            $response = [
+                'status' => true,
+                'mensaje' => 'El cliente existe',
+                'vehiculos' => $array,
+            ];
+        }
+        echo json_encode($response);
+    }
+
+    public function buscarxplaca($params)
+    {
+        $this->cors->corsJson();
+        $id_vehiculo = intval($params['id']);
+        $vehiculo = Vehiculo::find($id_vehiculo);
+        $response = [];
+
+        if ($vehiculo == null) {
+            $response = [
+                'status' => false,
+                'mensaje' => 'El vehiculo no existe',
+                'vehiculo' => null,
+            ];
+
+        } else {
+            $response = [
+                'status' => true,
+                'mensaje' => 'El vehiculo existe',
+                'vehiculo' => $vehiculo,
+                'marca_id' => $vehiculo->marca->id,
+            ];
+        }
+        echo json_encode($response);
 
     }
+
+    
 }

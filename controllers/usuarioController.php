@@ -102,6 +102,7 @@ class UsuarioController
                         //Crear un mecanico y guardar
                         $mecanico = new Mecanico;
                         $mecanico->persona_id = $id_pers;
+                        $mecanico->status= 'D';
                         $mecanico->estado= 'A';
                         $mecanico->save();
 
