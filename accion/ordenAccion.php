@@ -15,21 +15,21 @@ class OrdenAccion
                 } else
                 if ($ruta == '/orden/listar') {
                     Route::get('/orden/listar', 'ordenController@listar');
+                } else
+                if ($ruta == '/orden/visualizar' && $params) {
+                    Route::get('/orden/visualizar/:opcion/:estado', 'ordenController@visualizar', $params); 
+                } else
+                if ($ruta == '/orden/actualizarOrden' && $params) {
+                    Route::get('/orden/actualizarOrden/:id_orden/:estado_id/:estado_mecanico', 'ordenController@actualizarOrden', $params);
+                } else
+                if ($ruta == '/orden/estado' && $params) {
+                    Route::get('/orden/estado/:id_persona/:estado_id', 'ordenController@estado', $params);
                 }/*  else
                 if ($ruta == '/orden/listarhoy') {
                     Route::get('/orden/listarhoy', 'ordenController@listarhoy');
                 } else
-                if ($ruta == '/orden/visualizar' && $params) {
-                    Route::get('/orden/visualizar/:opcion/:estado', 'ordenController@visualizar', $params);
-                } else
                 if ($ruta == '/orden/dashboard_mecanico' && $params) {
                     Route::get('/orden/dashboard_mecanico/:id_persona', 'ordenController@dashboard_mecanico', $params);
-                } else
-                if ($ruta == '/orden/estado' && $params) {
-                    Route::get('/orden/estado/:id_persona/:estado_id', 'ordenController@estado', $params);
-                } else
-                if ($ruta == '/orden/actualizar_orden' && $params) {
-                    Route::get('/orden/actualizar_orden/:id_orden/:estado_id/:estado_mecanico', 'ordenController@actualizar_orden', $params);
                 }else
                 if($ruta == '/orden/cliente'){
                     Route::get('/orden/cliente', 'ordenController@orden_cliente');

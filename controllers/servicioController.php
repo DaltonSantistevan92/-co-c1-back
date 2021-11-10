@@ -236,4 +236,18 @@ class ServicioController
         echo json_encode($response);
     }
 
+    public function getServicioByOrden($id){
+
+        $sql = "SELECT id, (SELECT servicios.detalle FROM servicios WHERE servicios.id = orden_servicio.servicio_id) as servicio, 
+        (SELECT servicios.precio FROM servicios WHERE servicios.id = orden_servicio.servicio_id) as precio FROM `orden_servicio` WHERE estado = 'A' AND orden_id = $id";
+        $array = $this->conexion->database::select($sql);
+        $response = [];
+
+        if(count($array) > 0){
+            $response = $array;
+        }
+
+        return $response;
+    }
+
 }

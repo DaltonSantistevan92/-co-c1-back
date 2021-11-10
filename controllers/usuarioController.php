@@ -107,7 +107,7 @@ class UsuarioController
                         $mecanico->save();
 
 
-                    }else if($usuario->rol_id == 3){ //verifica si ahi rol cliente
+                    }else if($usuario->rol_id == 4){ //verifica si ahi rol cliente
                         //Crear un cliente y guardar
                         $cliente = new Cliente;
                         $cliente->persona_id = $id_pers;
@@ -206,7 +206,7 @@ class UsuarioController
         $this->cors->corsJson();
 
         //$usuarios = Usuario::where('estado', 'A')->orderBy('usuario')->get();
-        $usuarios = Usuario::where('rol_id','<>',3)->orderBy('usuario')->get();
+        $usuarios = Usuario::where('rol_id','<>',4)->orderBy('usuario')->get();
 
 
         $data = [];    $i = 1;
