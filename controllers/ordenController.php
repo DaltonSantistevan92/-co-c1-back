@@ -7,8 +7,11 @@ require_once 'core/conexion.php';
 require_once 'core/params.php';
 require_once 'models/ordenModel.php';
 require_once 'models/clienteModel.php';
-require_once 'models/mecanicoModel.php';
+require_once 'models/usuarioModel.php';
+require_once 'models/progresoModel.php';
 require_once 'controllers/ordenservicioController.php';
+require_once 'controllers/servicioController.php';
+
 
 class OrdenController
 {
@@ -94,6 +97,176 @@ class OrdenController
         echo json_encode($response);
 
     }
+
+    public function visualizar($params)
+    {
+        $this->cors->corsJson();
+        $opcion = $params['opcion'];
+        $estado = intval($params['estado']);
+
+        $response = $this->ordenesByEstado($estado, $opcion);
+        echo json_encode($response);
+    }
+
+    private function ordenesByEstado($estado_orden_id, $opcion)
+    {
+        $hoy = date('Y-m-d');
+        $pend = 1;    $existe = '';   $datos = [];   $response = [];
+        $servicioController = new ServicioController;
+
+        if ($opcion == '1') { //hoy
+            $pendientes = Orden::where('estado_orden_id', $estado_orden_id)
+                ->where('fecha', $hoy)->orderBy('id', 'DESC')->get();
+
+            $existe = (count($pendientes) > 0) ? '1' : '0';
+        } else
+        if ($opcion == '2') { //ayer
+            $ayer = date("Y-m-d", strtotime($hoy . "- 1 days"));
+
+            $pendientes = Orden::where('estado_orden_id', $estado_orden_id)
+                ->where('fecha', $ayer)->orderBy('id', 'DESC')->get();
+
+            $existe = (count($pendientes) > 0) ? '1' : '0';
+        }  else
+        if ($opcion == '3') { //ultimo 7 dias
+            $last7days = date("Y-m-d", strtotime($hoy . "- 7 days"));
+
+            $pendientes = Orden::where('estado_orden_id', $estado_orden_id)
+                ->where('fecha', '>=', $last7days)
+                ->where('fecha', '<=', $hoy)->orderBy('id', 'DESC')->get();
+
+            $existe = (count($pendientes) > 0) ? '1' : '0';
+        } else {
+            $existe = '1'; //pendiente
+        }
+
+        if ($existe == '1') { //pendiente
+            foreach ($pendientes as $pen) {
+                $servicios = $servicioController->getServicioByOrden($pen->id);
+    
+                $aux = [
+                    'orden' => $pen,
+                    'cliente_id' => $pen->cliente->persona->id,
+                    'vehiculo_id' => $pen->vehiculo->marca->id,
+                    'usuario_id' => $pen->usuario->persona->id,
+                    'mecanico_id ' => $pen->mecanico->persona->id,
+                    'estado_orden_id' => $pen->estado_orden->id,
+                    'servicios' => $servicios,
+        
+
+                ];
+                $datos[] = $aux;
+            }
+            $response = [
+                'status' => true,
+                'mensaje' => 'Existen ordenes',
+                'ordenes' => $datos,
+            ];
+        } else
+        if ($existe == '0') {
+            $response = [
+                'status' => false,
+                'mensaje' => 'No existen datos para la consulta realizadas',
+                'ordenes' => null,
+            ];
+        } else {
+            $response = [
+                'status' => false,
+                'mensaje' => 'El parametro ingresado no es válido',
+                'ordenes' => null,
+            ];
+        }
+        return $response;
+    }
+
+    public function actualizarOrden($params){
+        $this->cors->corsJson();
+        $id_orden = intval($params['id_orden']);
+        $id_estado = intval($params['estado_id']);
+        $estado_mecanico = ucfirst($params['estado_mecanico']);
+        $mensajes = '';       $response = [];
+
+        $orden = Orden::find($id_orden);
+
+        if ($orden) {
+            $mecanico = Mecanico::find($orden->mecanico_id);
+
+            $orden->estado_orden_id = $id_estado;
+            $orden->save();
+
+            if ($estado_mecanico == 'D' || $estado_mecanico == 'O') {
+                $mecanico->status = $estado_mecanico;
+                $mecanico->save();
+            }
+
+            switch ($id_estado) {
+                case 1:
+                    $mensajes = 'La orden esta pendiente';  break;            
+                case 2:
+                    $mensajes = 'La orden esta en proceso'; break;
+                case 3:
+                    $mensajes = 'La orden se encuentra terminada'; break;
+                /* case 4:
+                    $mensajes = 'La orden ha sido cancelada'; break; */
+            }
+
+            $response = [
+                'status' => true,
+                'mensaje' => $mensajes,
+            ];
+
+        } else {
+            $response = [
+                'status' => false,
+                'mensaje' => 'No se puede actualizar la orden',
+            ];
+        }
+        echo json_encode($response);
+
+    }
+
+    public function estado($params)
+    {
+        $this->cors->corsJson();
+        $id_persona = intval($params['id_persona']);
+        $id_estado = intval($params['estado_id']);
+
+        $response = [];
+
+        $usuario = Usuario::where('estado', 'A')->where('persona_id', $id_persona)->get()->first();
+
+        if ($usuario) {
+            $usu_id = $usuario->id;
+    
+            $pendientes = Orden::where('estado', 'A')
+                ->where('estado_orden_id', $id_estado)
+                ->where('usuario_id', $usu_id)->orderBy('id', 'DESC')->get();
+
+            $servicioController = new ServicioController;
+            foreach ($pendientes as $pen) {
+                
+                $serv = $servicioController->getServicioByOrden($pen->id);
+                $ultimoProgreso = Progreso::where('orden_id', $pen->id)->orderBy('id','desc')->get()->first();
+
+                $aux = [
+                    'orden' => $pen,
+                    'cliente_id' => $pen->cliente->persona->id,
+                    'vehiculo_id' => $pen->vehiculo->marca->id,
+                    'usuario_id' => $pen->usuario->persona->id,
+                    'estado_orden_id' => $pen->estado_orden->id,
+                    'servicios' => $serv,
+                    'ultimo_progreso' => $ultimoProgreso
+                ];
+                $response[] = $aux;
+            }
+
+        }
+        echo json_encode($response);
+
+    }
+
+
+
 
 
 
