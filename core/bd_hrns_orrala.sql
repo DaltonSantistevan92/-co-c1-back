@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.1.0
+-- version 5.1.1
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 10-11-2021 a las 10:29:10
--- Versión del servidor: 10.4.18-MariaDB
--- Versión de PHP: 7.3.27
+-- Tiempo de generación: 08-12-2021 a las 22:30:20
+-- Versión del servidor: 10.4.21-MariaDB
+-- Versión de PHP: 7.4.25
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -86,6 +86,20 @@ CREATE TABLE `comprobantes` (
   `estado` char(1) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `entradas`
+--
+
+CREATE TABLE `entradas` (
+  `id` int(11) NOT NULL,
+  `usuario_id` int(11) DEFAULT NULL,
+  `clave` varchar(10) DEFAULT NULL,
+  `hora` time DEFAULT NULL,
+  `fecha` date DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -196,7 +210,9 @@ INSERT INTO `menus` (`id`, `id_seccion`, `menu`, `icono`, `url`, `posicion`, `es
 (16, 0, 'Progreso de Ordenes', 'fa fa-cogs', 'orden-progreso', 5, 'A'),
 (17, 16, 'Ordenes Pendientes', '#', 'orden/pendientes', 0, 'A'),
 (18, 16, 'Ordenes en Proceso', '#', 'orden/proceso', 1, 'A'),
-(19, 16, 'Ordenes Terminadas', '#', 'orden/terminadas', 2, 'A');
+(19, 16, 'Ordenes Terminadas', '#', 'orden/terminadas', 2, 'A'),
+(20, 0, 'Extras', 'fa fa-clone', 'extras', 6, 'A'),
+(21, 20, 'Cotización', '#', 'extra/cotizacion', 0, 'A');
 
 -- --------------------------------------------------------
 
@@ -228,11 +244,13 @@ INSERT INTO `orden` (`id`, `usuario_id`, `cliente_id`, `vehiculo_id`, `mecanico_
 (1, 1, 2, 5, 2, '2021-10-28', 40, 1, 'A', 'N', 'caf1ef', '2021-10-29 00:47:27', '2021-10-29 00:47:27'),
 (2, 1, 1, 6, 2, '2021-10-28', 60, 1, 'A', 'N', '4bfd16', '2021-10-29 00:48:52', '2021-10-29 00:48:52'),
 (3, 1, 3, 7, 2, '2021-10-28', 450, 3, 'A', 'N', '18705f', '2021-10-29 01:49:14', '2021-11-10 09:19:34'),
-(4, 1, 1, 2, 2, '2021-11-06', 465, 1, 'A', 'N', 'e7deed', '2021-11-06 05:47:23', '2021-11-06 05:47:23'),
+(4, 1, 1, 2, 2, '2021-11-06', 465, 2, 'A', 'N', 'e7deed', '2021-11-06 05:47:23', '2021-12-08 19:07:18'),
 (5, 1, 3, 7, 2, '2021-11-09', 60, 1, 'A', 'N', '5a05e7', '2021-11-09 05:36:20', '2021-11-09 05:36:20'),
-(6, 1, 4, 8, 1, '2021-11-09', 500, 2, 'A', 'N', '7a3c15', '2021-11-10 00:25:28', '2021-11-10 07:47:40'),
-(7, 1, 4, 4, 2, '2021-11-09', 295, 1, 'A', 'N', 'af074b', '2021-11-10 00:32:47', '2021-11-10 05:02:50'),
-(8, 1, 2, 5, 1, '2021-11-09', 50, 3, 'A', 'N', '834674', '2021-11-10 03:55:54', '2021-11-10 09:07:11');
+(6, 1, 4, 8, 1, '2021-11-09', 500, 3, 'A', 'N', '7a3c15', '2021-11-10 00:25:28', '2021-12-08 15:37:41'),
+(7, 1, 4, 4, 2, '2021-11-09', 295, 3, 'A', 'N', 'af074b', '2021-11-10 00:32:47', '2021-12-08 19:54:00'),
+(8, 1, 2, 5, 1, '2021-11-09', 50, 3, 'A', 'N', '834674', '2021-11-10 03:55:54', '2021-11-10 09:07:11'),
+(9, 1, 4, 4, 2, '2021-12-08', 60, 1, 'A', 'N', '97aab0', '2021-12-08 15:36:04', '2021-12-08 15:36:04'),
+(10, 1, 3, 7, 1, '2021-12-08', 200, 1, 'A', 'N', 'c2d159', '2021-12-08 16:34:10', '2021-12-08 16:34:10');
 
 -- --------------------------------------------------------
 
@@ -269,7 +287,10 @@ INSERT INTO `orden_servicio` (`id`, `orden_id`, `servicio_id`, `estado`) VALUES
 (15, 7, 4, 'A'),
 (16, 7, 9, 'A'),
 (17, 7, 11, 'A'),
-(18, 8, 3, 'A');
+(18, 8, 3, 'A'),
+(19, 9, 3, 'A'),
+(20, 9, 5, 'A'),
+(21, 10, 11, 'A');
 
 -- --------------------------------------------------------
 
@@ -308,7 +329,9 @@ INSERT INTO `permisos` (`id`, `rol_id`, `menu_id`, `acceso`, `estado`) VALUES
 (16, 1, 16, 'S', 'A'),
 (17, 1, 17, 'S', 'A'),
 (18, 1, 18, 'S', 'A'),
-(19, 1, 19, 'S', 'A');
+(19, 1, 19, 'S', 'A'),
+(20, 1, 20, 'S', 'A'),
+(21, 1, 21, 'S', 'A');
 
 -- --------------------------------------------------------
 
@@ -375,7 +398,12 @@ INSERT INTO `progresos` (`id`, `orden_id`, `detalle`, `progreso`, `total`, `falt
 (8, 3, 'Avance final', 40, 100, 0, 'A', '2021-11-10 09:19:17', '2021-11-10 09:19:17'),
 (9, 6, 'Progreso 1', 20, 30, 70, 'A', '2021-11-10 09:20:07', '2021-11-10 09:20:07'),
 (10, 6, 'Progreso 2', 50, 80, 20, 'A', '2021-11-10 09:20:28', '2021-11-10 09:20:28'),
-(11, 6, 'Progreso final', 20, 100, 0, 'A', '2021-11-10 09:20:50', '2021-11-10 09:20:50');
+(11, 6, 'Progreso final', 20, 100, 0, 'A', '2021-11-10 09:20:50', '2021-11-10 09:20:50'),
+(12, 7, 'Orden en Proceso', 10, 10, 90, 'A', '2021-12-08 15:37:26', '2021-12-08 15:37:26'),
+(13, 4, 'Orden en Proceso', 10, 10, 90, 'A', '2021-12-08 19:07:18', '2021-12-08 19:07:18'),
+(14, 7, 'Avance 1', 50, 60, 40, 'A', '2021-12-08 19:52:26', '2021-12-08 19:52:26'),
+(15, 7, 'Avance 2', 31, 91, 9, 'A', '2021-12-08 19:53:12', '2021-12-08 19:53:12'),
+(16, 7, 'Avance 3', 9, 100, 0, 'A', '2021-12-08 19:53:51', '2021-12-08 19:53:51');
 
 -- --------------------------------------------------------
 
@@ -386,6 +414,10 @@ INSERT INTO `progresos` (`id`, `orden_id`, `detalle`, `progreso`, `total`, `falt
 CREATE TABLE `roles` (
   `id` int(11) NOT NULL,
   `cargo` varchar(100) DEFAULT NULL,
+  `salario_mensual` float DEFAULT NULL,
+  `salario_quincenal` float DEFAULT NULL,
+  `salario_diario` float DEFAULT NULL,
+  `salario_hora` float DEFAULT NULL,
   `estado` char(1) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
@@ -395,11 +427,43 @@ CREATE TABLE `roles` (
 -- Volcado de datos para la tabla `roles`
 --
 
-INSERT INTO `roles` (`id`, `cargo`, `estado`, `created_at`, `updated_at`) VALUES
-(1, 'Administrador', 'A', '2021-10-07 02:27:16', '2021-10-07 02:27:16'),
-(2, 'Mecánico', 'A', '2021-10-09 23:14:03', '2021-10-09 23:14:03'),
-(3, 'Secretaria', 'A', '2021-10-17 22:26:37', '2021-10-17 22:26:37'),
-(4, 'Cliente', 'A', '2021-11-10 00:15:22', '2021-11-10 00:15:22');
+INSERT INTO `roles` (`id`, `cargo`, `salario_mensual`, `salario_quincenal`, `salario_diario`, `salario_hora`, `estado`, `created_at`, `updated_at`) VALUES
+(1, 'Administrador', NULL, 0, NULL, NULL, 'A', '2021-10-07 02:27:16', '2021-10-07 02:27:16'),
+(2, 'Mecánico', 400, 0, 400, 1.75, 'A', '2021-10-09 23:14:03', '2021-10-09 23:14:03'),
+(3, 'Secretaria', NULL, 0, NULL, NULL, 'A', '2021-10-17 22:26:37', '2021-10-17 22:26:37'),
+(4, 'Cliente', NULL, 0, NULL, NULL, 'A', '2021-11-10 00:15:22', '2021-11-10 00:15:22');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `rol_pagos`
+--
+
+CREATE TABLE `rol_pagos` (
+  `id` int(11) NOT NULL,
+  `usuario_id` int(11) DEFAULT NULL,
+  `cant_horas_extas` int(11) DEFAULT NULL,
+  `horas_extras` time DEFAULT NULL,
+  `porcentaje_iess` float DEFAULT NULL,
+  `aporte_iess` float DEFAULT NULL,
+  `total_ingresos` float DEFAULT NULL,
+  `total_descuentos` float DEFAULT NULL,
+  `sueldo_recibir` float DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `salidas`
+--
+
+CREATE TABLE `salidas` (
+  `id` int(11) NOT NULL,
+  `usuario_id` int(11) DEFAULT NULL,
+  `clave` varchar(10) DEFAULT NULL,
+  `hora` time DEFAULT NULL,
+  `fecha` date NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
@@ -444,6 +508,7 @@ CREATE TABLE `usuarios` (
   `usuario` varchar(100) DEFAULT NULL,
   `img` varchar(255) DEFAULT NULL,
   `clave` varchar(255) DEFAULT NULL,
+  `code_qr` varchar(255) NOT NULL,
   `conf_clave` varchar(255) DEFAULT NULL,
   `estado` char(1) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
@@ -454,16 +519,16 @@ CREATE TABLE `usuarios` (
 -- Volcado de datos para la tabla `usuarios`
 --
 
-INSERT INTO `usuarios` (`id`, `persona_id`, `rol_id`, `usuario`, `img`, `clave`, `conf_clave`, `estado`, `created_at`, `updated_at`) VALUES
-(1, 1, 1, 'Cesar', 'cesar.jpg', '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92', '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92', 'A', '2021-10-07 02:27:57', '2021-10-16 04:09:30'),
-(2, 2, 1, 'Jose', 'default.jpg', 'ed08c290d7e22f7bb324b15cbadce35b0b348564fd2d5f95752388d86d71bcca', 'ed08c290d7e22f7bb324b15cbadce35b0b348564fd2d5f95752388d86d71bcca', 'A', '2021-10-08 08:16:46', '2021-10-19 19:00:10'),
-(5, 5, 1, 'Bumon', 'hola.jpg', '2963881b72032a09437589135e5676a3ef08d409f12f4d245197ff1d9f991a1c', '2963881b72032a09437589135e5676a3ef08d409f12f4d245197ff1d9f991a1c', 'A', '2021-10-08 17:40:32', '2021-10-16 06:04:35'),
-(10, 10, 2, 'manuel', 'mecanico.png', 'cca457407f24b80c72d89dd061837112cb99a0aa050c155514b320b7aaffe95c', 'cca457407f24b80c72d89dd061837112cb99a0aa050c155514b320b7aaffe95c', 'A', '2021-10-19 19:33:08', '2021-10-19 19:33:08'),
-(12, 12, 3, 'carlos', 'user-default.jpg', '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92', '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92', 'A', '2021-10-19 19:38:54', '2021-10-19 19:38:54'),
-(13, 13, 3, 'alex', 'user-default.jpg', '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92', '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92', 'A', '2021-10-20 05:17:52', '2021-10-20 05:17:52'),
-(14, 14, 2, 'luis', 'luisMecanico.png', 'c5ff177a86e82441f93e3772da700d5f6838157fa1bfdc0bb689d7f7e55e7aba', 'c5ff177a86e82441f93e3772da700d5f6838157fa1bfdc0bb689d7f7e55e7aba', 'A', '2021-10-28 21:31:00', '2021-10-28 21:31:00'),
-(15, 15, 3, 'anabell', '20211025_153113.jpg', '1d8dd86687f10bbdeff9edc863382bb9cc13465f8ab1bfd485ba0afba23b43cf', '1d8dd86687f10bbdeff9edc863382bb9cc13465f8ab1bfd485ba0afba23b43cf', 'A', '2021-10-29 01:45:05', '2021-10-29 01:45:05'),
-(17, 16, 4, 'geovanny', 'user-default.jpg', '93fa3e4624676f2e9aa143911118b4547087e9b6e0b6076f2e1027d7a2da2b0a', '93fa3e4624676f2e9aa143911118b4547087e9b6e0b6076f2e1027d7a2da2b0a', 'A', '2021-11-10 00:22:11', '2021-11-10 00:22:11');
+INSERT INTO `usuarios` (`id`, `persona_id`, `rol_id`, `usuario`, `img`, `clave`, `code_qr`, `conf_clave`, `estado`, `created_at`, `updated_at`) VALUES
+(1, 1, 1, 'Cesar', 'cesar.jpg', '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92', '', '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92', 'A', '2021-10-07 02:27:57', '2021-10-16 04:09:30'),
+(2, 2, 1, 'Jose', 'default.jpg', 'ed08c290d7e22f7bb324b15cbadce35b0b348564fd2d5f95752388d86d71bcca', '', 'ed08c290d7e22f7bb324b15cbadce35b0b348564fd2d5f95752388d86d71bcca', 'A', '2021-10-08 08:16:46', '2021-10-19 19:00:10'),
+(5, 5, 1, 'Bumon', 'hola.jpg', '2963881b72032a09437589135e5676a3ef08d409f12f4d245197ff1d9f991a1c', '', '2963881b72032a09437589135e5676a3ef08d409f12f4d245197ff1d9f991a1c', 'A', '2021-10-08 17:40:32', '2021-10-16 06:04:35'),
+(10, 10, 2, 'manuel', 'mecanico.png', 'cca457407f24b80c72d89dd061837112cb99a0aa050c155514b320b7aaffe95c', '', 'cca457407f24b80c72d89dd061837112cb99a0aa050c155514b320b7aaffe95c', 'A', '2021-10-19 19:33:08', '2021-10-19 19:33:08'),
+(12, 12, 3, 'carlos', 'user-default.jpg', '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92', '', '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92', 'A', '2021-10-19 19:38:54', '2021-10-19 19:38:54'),
+(13, 13, 3, 'Alex', 'user-default.jpg', '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92', '', '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92', 'A', '2021-10-20 05:17:52', '2021-12-08 19:06:13'),
+(14, 14, 2, 'luis', 'luisMecanico.png', 'c5ff177a86e82441f93e3772da700d5f6838157fa1bfdc0bb689d7f7e55e7aba', '', 'c5ff177a86e82441f93e3772da700d5f6838157fa1bfdc0bb689d7f7e55e7aba', 'A', '2021-10-28 21:31:00', '2021-10-28 21:31:00'),
+(15, 15, 3, 'anabell', '20211025_153113.jpg', '1d8dd86687f10bbdeff9edc863382bb9cc13465f8ab1bfd485ba0afba23b43cf', '', '1d8dd86687f10bbdeff9edc863382bb9cc13465f8ab1bfd485ba0afba23b43cf', 'A', '2021-10-29 01:45:05', '2021-10-29 01:45:05'),
+(17, 16, 4, 'geovanny', 'user-default.jpg', '93fa3e4624676f2e9aa143911118b4547087e9b6e0b6076f2e1027d7a2da2b0a', '', '93fa3e4624676f2e9aa143911118b4547087e9b6e0b6076f2e1027d7a2da2b0a', 'A', '2021-11-10 00:22:11', '2021-11-10 00:22:11');
 
 -- --------------------------------------------------------
 
@@ -521,6 +586,13 @@ ALTER TABLE `clientes_vehiculos`
 ALTER TABLE `comprobantes`
   ADD PRIMARY KEY (`id`),
   ADD KEY `fk_compro_orden` (`orden_id`);
+
+--
+-- Indices de la tabla `entradas`
+--
+ALTER TABLE `entradas`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_entradas_usuario` (`usuario_id`);
 
 --
 -- Indices de la tabla `estado_orden`
@@ -594,6 +666,20 @@ ALTER TABLE `roles`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indices de la tabla `rol_pagos`
+--
+ALTER TABLE `rol_pagos`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `usuario-.roles` (`usuario_id`);
+
+--
+-- Indices de la tabla `salidas`
+--
+ALTER TABLE `salidas`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_salida_usuario` (`usuario_id`);
+
+--
 -- Indices de la tabla `servicios`
 --
 ALTER TABLE `servicios`
@@ -637,6 +723,12 @@ ALTER TABLE `comprobantes`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT de la tabla `entradas`
+--
+ALTER TABLE `entradas`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT de la tabla `estado_orden`
 --
 ALTER TABLE `estado_orden`
@@ -658,25 +750,25 @@ ALTER TABLE `mecanicos`
 -- AUTO_INCREMENT de la tabla `menus`
 --
 ALTER TABLE `menus`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- AUTO_INCREMENT de la tabla `orden`
 --
 ALTER TABLE `orden`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT de la tabla `orden_servicio`
 --
 ALTER TABLE `orden_servicio`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- AUTO_INCREMENT de la tabla `permisos`
 --
 ALTER TABLE `permisos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- AUTO_INCREMENT de la tabla `personas`
@@ -688,13 +780,25 @@ ALTER TABLE `personas`
 -- AUTO_INCREMENT de la tabla `progresos`
 --
 ALTER TABLE `progresos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT de la tabla `roles`
 --
 ALTER TABLE `roles`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- AUTO_INCREMENT de la tabla `rol_pagos`
+--
+ALTER TABLE `rol_pagos`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `salidas`
+--
+ALTER TABLE `salidas`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `servicios`
@@ -738,6 +842,12 @@ ALTER TABLE `comprobantes`
   ADD CONSTRAINT `fk_compro_orden` FOREIGN KEY (`orden_id`) REFERENCES `orden` (`id`);
 
 --
+-- Filtros para la tabla `entradas`
+--
+ALTER TABLE `entradas`
+  ADD CONSTRAINT `fk_entradas_usuario` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`);
+
+--
 -- Filtros para la tabla `mecanicos`
 --
 ALTER TABLE `mecanicos`
@@ -772,6 +882,18 @@ ALTER TABLE `permisos`
 --
 ALTER TABLE `progresos`
   ADD CONSTRAINT `fk_pro_orden` FOREIGN KEY (`orden_id`) REFERENCES `orden` (`id`);
+
+--
+-- Filtros para la tabla `rol_pagos`
+--
+ALTER TABLE `rol_pagos`
+  ADD CONSTRAINT `usuario-.roles` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`);
+
+--
+-- Filtros para la tabla `salidas`
+--
+ALTER TABLE `salidas`
+  ADD CONSTRAINT `fk_salida_usuario` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`);
 
 --
 -- Filtros para la tabla `usuarios`

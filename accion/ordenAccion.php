@@ -51,25 +51,10 @@ class OrdenAccion
             case 'post':
                 if ($ruta == '/orden/guardar') {
                     Route::post('/orden/guardar', 'ordenController@guardar');
-                }/*  else
-                if ($ruta == '/orden/repuesto') {
-                    Route::post('/orden/repuesto', 'ordenController@repuesto');
-                } */ else {
-                    ErrorClass::e('404', 'No se encuentra la url');
-                }
-                break;
-
-            /* case 'put':
-                if ($ruta == '/orden/updateObservacion' && $params) {
-                    Route::put('/orden/updateObservacion/:id', 'ordenController@updateObservacion', $params);
-                } else
-                if ($ruta == '/orden/example') {
-                    Route::put('/orden/example', 'ordenController@example');
                 } else {
                     ErrorClass::e('404', 'No se encuentra la url');
                 }
-                break; */
-
+                break;
 
         }
     }

@@ -6,6 +6,7 @@ require_once 'models/usuarioModel.php';
 require_once 'models/clienteModel.php';
 require_once 'models/estadoModel.php';
 require_once 'models/progresoModel.php';
+require_once 'models/ordenservicioModel.php';
 
 
 use Illuminate\Database\Eloquent\Model;

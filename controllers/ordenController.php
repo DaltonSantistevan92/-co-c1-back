@@ -13,18 +13,54 @@ require_once 'controllers/ordenservicioController.php';
 require_once 'controllers/servicioController.php';
 
 
+
 class OrdenController
 {
 
     private $cors;
     private $conexion;
     private $limit_key = 6;
+    private $servicioCtrl;
 
 
     public function __construct()
     {
         $this->cors = new Cors();
         $this->conexion = new Conexion();
+        $this->servicioCtrl = new ServicioController();
+    }
+
+    public function buscar($params)
+    {    
+        $this->cors->corsJson();
+        $id = intval($params['id']);
+        $response = [];
+
+        $dataOrden = Orden::find($id);
+
+        if($dataOrden == null){
+            $response = [
+                'status' => false,
+                'mensaje' => 'No existen Datos',
+                'orden' => null
+            ];
+        }else{
+            //cargar los servicios
+            $servicios = $this->servicioCtrl->getServicioByOrden($id);
+
+            $response = [
+                'status' => true,
+                'mensaje' => 'Existen Datos',
+                'orden' => $dataOrden,
+                'usuario_id' => $dataOrden->usuario->persona->id,
+                'cliente_id' => $dataOrden->cliente->persona->id,
+                'vehiculo_id' => $dataOrden->vehiculo->marca->id,
+                'mecanico_id' => $dataOrden->mecanico->persona->id,
+                'estado_orden_id' => $dataOrden->estado_orden->id,
+                'servicio' => $servicios
+            ];
+        }
+        echo json_encode($response);
     }
 
     public function guardar(Request $request){
