@@ -7,6 +7,8 @@ require_once 'models/clienteModel.php';
 require_once 'models/estadoModel.php';
 require_once 'models/progresoModel.php';
 require_once 'models/ordenservicioModel.php';
+require_once 'models/comprobantesModel.php';
+
 
 
 use Illuminate\Database\Eloquent\Model;
@@ -57,5 +59,10 @@ class Orden extends Model
     public function progreso()
     {
         return $this->hasMany(Progreso::class);
+    }
+
+    public function comprobantes()
+    {
+        return $this->hasMany(Comprobantes::class);
     }
 }

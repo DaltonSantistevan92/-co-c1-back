@@ -215,7 +215,7 @@ class OrdenController
         return $response;
     }
 
-    public function actualizarOrden($params){
+    public function actualizarOrden($params){ 
         $this->cors->corsJson();
         $id_orden = intval($params['id_orden']);
         $id_estado = intval($params['estado_id']);
@@ -276,6 +276,48 @@ class OrdenController
     
             $pendientes = Orden::where('estado', 'A')
                 ->where('estado_orden_id', $id_estado)
+                ->where('pagado','N')
+                ->where('usuario_id', $usu_id)->orderBy('id', 'DESC')->get();
+
+            $servicioController = new ServicioController;
+            foreach ($pendientes as $pen) {
+                
+                $serv = $servicioController->getServicioByOrden($pen->id);
+                $ultimoProgreso = Progreso::where('orden_id', $pen->id)->orderBy('id','desc')->get()->first();
+
+                $aux = [
+                    'orden' => $pen,
+                    'cliente_id' => $pen->cliente->persona->id,
+                    'vehiculo_id' => $pen->vehiculo->marca->id,
+                    'usuario_id' => $pen->usuario->persona->id,
+                    'estado_orden_id' => $pen->estado_orden->id,
+                    'servicios' => $serv,
+                    'ultimo_progreso' => $ultimoProgreso
+                ];
+                $response[] = $aux;
+            }
+
+        }
+        echo json_encode($response);
+
+    }
+
+    public function estadoPagada($params)
+    {
+        $this->cors->corsJson();
+        $id_persona = intval($params['id_persona']);
+        $id_estado = intval($params['estado_id']);
+
+        $response = [];
+
+        $usuario = Usuario::where('estado', 'A')->where('persona_id', $id_persona)->get()->first();
+
+        if ($usuario) {
+            $usu_id = $usuario->id;
+    
+            $pendientes = Orden::where('estado', 'A')
+                ->where('estado_orden_id', $id_estado)
+                ->where('pagado','S')
                 ->where('usuario_id', $usu_id)->orderBy('id', 'DESC')->get();
 
             $servicioController = new ServicioController;
