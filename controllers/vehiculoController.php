@@ -399,11 +399,13 @@ class VehiculoController
     }
 
 
-    public function buscarClienteVehiculo($params)
+    public function buscarClienteVehiculo($params) 
     {
         $this->cors->corsJson();
         $id_cliente = intval($params['id_cliente']);
-        $sql = "SELECT vehiculo_id, (select vehiculos.placa from vehiculos where vehiculos.id = cv.vehiculo_id) as placa FROM clientes_vehiculos cv WHERE cv.cliente_id = $id_cliente";
+        $sql = "SELECT vehiculo_id, 
+        (select vehiculos.placa from vehiculos where vehiculos.id = cv.vehiculo_id) as placa
+         FROM clientes_vehiculos cv WHERE cv.cliente_id = $id_cliente";
         $array = $this->conexion->database::select($sql);
 
         $cliente = Cliente::find($id_cliente);
