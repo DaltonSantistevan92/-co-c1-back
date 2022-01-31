@@ -5,6 +5,10 @@ require_once 'core/conexion.php';
 require_once 'app/request.php';
 require_once 'models/personaModel.php';
 require_once 'models/clienteModel.php';
+require_once 'models/clienteVehiculoModel.php';
+require_once 'models/vehiculoModel.php';
+
+
 
 class ClienteController 
 {
@@ -191,6 +195,73 @@ class ClienteController
                 'status' => false,
                 'mensaje' => 'No existen coincidencias',
                 'clientes' => null,
+            ];
+        }
+        echo json_encode($response);
+    }
+
+    public function updateKilometraje(Request $request){
+        $this->cors->corsJson();
+        $response = [];
+
+        $kilometrajeUPDRequest = $request->input('update_kilometraje');
+
+        if($kilometrajeUPDRequest){
+            $cliente_id = intval($kilometrajeUPDRequest->cliente_id);
+            $vehiculo_id = intval($kilometrajeUPDRequest->vehiculo_id);
+            $kilometraje = $kilometrajeUPDRequest->kilometraje;
+
+            $dataClienteVehiculo = Cliente_Vehiculo::where('cliente_id',$cliente_id)->where('vehiculo_id',$vehiculo_id)->get()->first();
+            
+            if($dataClienteVehiculo){      
+                $vehiculo = $dataClienteVehiculo->vehiculo;
+                $vehic_id = $vehiculo->id;
+
+                $datavehiculos = Vehiculo::find($vehic_id);
+                $datavehiculos->kilometraje = $kilometraje;
+        
+                if($datavehiculos->save()){
+                    $response = [
+                        'status' => true,
+                        'mensaje' => 'Se actualizó el kilometraje',
+                        'kilometraje' => $datavehiculos
+                    ];
+                }else{
+                    $response = [
+                        'status' => false,
+                        'mensaje' => 'No se puede actualizar kilometraje',
+                        'kilometraje' => null
+                    ];
+                }    
+            }
+        }else{
+            $response = [
+                'status' => false,
+                'mensaje' => 'no hay datos',
+                'kilometraje' => null
+            ];
+        }
+        echo json_encode($response);
+
+    }
+
+    public function contar(){
+        $this->cors->corsJson();
+        $clientes = Cliente::where('estado','A')->get();
+        $response = [];
+        if($clientes){
+            $response = [
+                'status' => true,
+                'mensaje' => 'Existen Cliente',
+                'Modelo' => 'Cliente',
+                'cantidad' => $clientes->count()
+            ];
+        }else{
+            $response = [
+                'status' => false,
+                'mensaje' => 'No Existen Cliente',
+                'Modelo' => 'Cliente',
+                'cantidad' => 0
             ];
         }
         echo json_encode($response);

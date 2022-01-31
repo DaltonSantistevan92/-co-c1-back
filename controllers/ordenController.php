@@ -12,8 +12,6 @@ require_once 'models/progresoModel.php';
 require_once 'controllers/ordenservicioController.php';
 require_once 'controllers/servicioController.php';
 
-
-
 class OrdenController
 {
 
@@ -21,7 +19,6 @@ class OrdenController
     private $conexion;
     private $limit_key = 6;
     private $servicioCtrl;
-
 
     public function __construct()
     {
@@ -31,20 +28,20 @@ class OrdenController
     }
 
     public function buscar($params)
-    {    
+    {
         $this->cors->corsJson();
         $id = intval($params['id']);
         $response = [];
 
         $dataOrden = Orden::find($id);
 
-        if($dataOrden == null){
+        if ($dataOrden == null) {
             $response = [
                 'status' => false,
                 'mensaje' => 'No existen Datos',
-                'orden' => null
+                'orden' => null,
             ];
-        }else{
+        } else {
             //cargar los servicios
             $servicios = $this->servicioCtrl->getServicioByOrden($id);
 
@@ -57,22 +54,23 @@ class OrdenController
                 'vehiculo_id' => $dataOrden->vehiculo->marca->id,
                 'mecanico_id' => $dataOrden->mecanico->persona->id,
                 'estado_orden_id' => $dataOrden->estado_orden->id,
-                'servicio' => $servicios
+                'servicio' => $servicios,
             ];
         }
         echo json_encode($response);
     }
 
-    public function guardar(Request $request){
+    public function guardar(Request $request)
+    {
         $this->cors->corsJson();
         $dataorden = $request->input('orden');
-        $ordenServicio = $request->input('ordenservicios'); 
+        $ordenServicio = $request->input('ordenservicios');
         $response = [];
-        
+
         $helper = new Helper();
         $codigo = $helper->generate_key($this->limit_key);
 
-        if($dataorden){
+        if ($dataorden) {
             $dataorden->usuario_id = intval($dataorden->usuario_id);
             $dataorden->cliente_id = intval($dataorden->cliente_id);
             $dataorden->vehiculo_id = intval($dataorden->vehiculo_id);
@@ -92,7 +90,7 @@ class OrdenController
             $nuevaOrden->pagado = 'N';
             $nuevaOrden->codigo = $codigo;
 
-            $existeOrden = Orden::where('codigo',$codigo)->get()->first();
+            $existeOrden = Orden::where('codigo', $codigo)->get()->first();
 
             if ($existeOrden) {
                 $response = [
@@ -101,33 +99,33 @@ class OrdenController
                     'orden' => null,
                     'ordenservicios' => null,
                 ];
-            }else{
-                if($nuevaOrden->save()){
+            } else {
+                if ($nuevaOrden->save()) {
                     //guarda en la tabla orden-servicio
                     $ordenServicioController = new OrdenServicioController();
-                    $extra = $ordenServicioController->guardar($nuevaOrden->id,$ordenServicio);
+                    $extra = $ordenServicioController->guardar($nuevaOrden->id, $ordenServicio);
 
                     $response = [
                         'status' => true,
-                        'mensaje' =>'Guardando los datos',
+                        'mensaje' => 'Guardando los datos',
                         'orden' => $nuevaOrden,
-                        'ordenservicio' => $extra
+                        'ordenservicio' => $extra,
                     ];
-                }else{
+                } else {
                     $response = [
                         'status' => false,
-                        'mensaje' =>'No se puedo guardar',
+                        'mensaje' => 'No se puedo guardar',
                         'orden' => null,
-                        'ordenservicio' => null
+                        'ordenservicio' => null,
                     ];
                 }
             }
-        }else{
+        } else {
             $response = [
                 'status' => false,
-                'mensaje' =>'La orden ya existe',
+                'mensaje' => 'La orden ya existe',
                 'orden' => null,
-                'ordenservicio' => null
+                'ordenservicio' => null,
             ];
         }
         echo json_encode($response);
@@ -147,7 +145,10 @@ class OrdenController
     private function ordenesByEstado($estado_orden_id, $opcion)
     {
         $hoy = date('Y-m-d');
-        $pend = 1;    $existe = '';   $datos = [];   $response = [];
+        $pend = 1;
+        $existe = '';
+        $datos = [];
+        $response = [];
         $servicioController = new ServicioController;
 
         if ($opcion == '1') { //hoy
@@ -163,7 +164,7 @@ class OrdenController
                 ->where('fecha', $ayer)->orderBy('id', 'DESC')->get();
 
             $existe = (count($pendientes) > 0) ? '1' : '0';
-        }  else
+        } else
         if ($opcion == '3') { //ultimo 7 dias
             $last7days = date("Y-m-d", strtotime($hoy . "- 7 days"));
 
@@ -179,7 +180,7 @@ class OrdenController
         if ($existe == '1') { //pendiente
             foreach ($pendientes as $pen) {
                 $servicios = $servicioController->getServicioByOrden($pen->id);
-    
+
                 $aux = [
                     'orden' => $pen,
                     'cliente_id' => $pen->cliente->persona->id,
@@ -188,7 +189,6 @@ class OrdenController
                     'mecanico_id ' => $pen->mecanico->persona->id,
                     'estado_orden_id' => $pen->estado_orden->id,
                     'servicios' => $servicios,
-        
 
                 ];
                 $datos[] = $aux;
@@ -215,12 +215,14 @@ class OrdenController
         return $response;
     }
 
-    public function actualizarOrden($params){ 
+    public function actualizarOrden($params)
+    {
         $this->cors->corsJson();
         $id_orden = intval($params['id_orden']);
         $id_estado = intval($params['estado_id']);
         $estado_mecanico = ucfirst($params['estado_mecanico']);
-        $mensajes = '';       $response = [];
+        $mensajes = '';
+        $response = [];
 
         $orden = Orden::find($id_orden);
 
@@ -237,13 +239,16 @@ class OrdenController
 
             switch ($id_estado) {
                 case 1:
-                    $mensajes = 'La orden esta pendiente';  break;            
+                    $mensajes = 'La orden esta pendiente';
+                    break;
                 case 2:
-                    $mensajes = 'La orden esta en proceso'; break;
+                    $mensajes = 'La orden esta en proceso';
+                    break;
                 case 3:
-                    $mensajes = 'La orden se encuentra terminada'; break;
-                /* case 4:
-                    $mensajes = 'La orden ha sido cancelada'; break; */
+                    $mensajes = 'La orden se encuentra terminada';
+                    break;
+                    /* case 4:
+            $mensajes = 'La orden ha sido cancelada'; break; */
             }
 
             $response = [
@@ -273,17 +278,17 @@ class OrdenController
 
         if ($usuario) {
             $usu_id = $usuario->id;
-    
+
             $pendientes = Orden::where('estado', 'A')
                 ->where('estado_orden_id', $id_estado)
-                ->where('pagado','N')
+                ->where('pagado', 'N')
                 ->where('usuario_id', $usu_id)->orderBy('id', 'DESC')->get();
 
             $servicioController = new ServicioController;
             foreach ($pendientes as $pen) {
-                
+
                 $serv = $servicioController->getServicioByOrden($pen->id);
-                $ultimoProgreso = Progreso::where('orden_id', $pen->id)->orderBy('id','desc')->get()->first();
+                $ultimoProgreso = Progreso::where('orden_id', $pen->id)->orderBy('id', 'desc')->get()->first();
 
                 $aux = [
                     'orden' => $pen,
@@ -292,7 +297,7 @@ class OrdenController
                     'usuario_id' => $pen->usuario->persona->id,
                     'estado_orden_id' => $pen->estado_orden->id,
                     'servicios' => $serv,
-                    'ultimo_progreso' => $ultimoProgreso
+                    'ultimo_progreso' => $ultimoProgreso,
                 ];
                 $response[] = $aux;
             }
@@ -314,17 +319,17 @@ class OrdenController
 
         if ($usuario) {
             $usu_id = $usuario->id;
-    
+
             $pendientes = Orden::where('estado', 'A')
                 ->where('estado_orden_id', $id_estado)
-                ->where('pagado','S')
+                ->where('pagado', 'S')
                 ->where('usuario_id', $usu_id)->orderBy('id', 'DESC')->get();
 
             $servicioController = new ServicioController;
             foreach ($pendientes as $pen) {
-                
+
                 $serv = $servicioController->getServicioByOrden($pen->id);
-                $ultimoProgreso = Progreso::where('orden_id', $pen->id)->orderBy('id','desc')->get()->first();
+                $ultimoProgreso = Progreso::where('orden_id', $pen->id)->orderBy('id', 'desc')->get()->first();
 
                 $aux = [
                     'orden' => $pen,
@@ -333,7 +338,7 @@ class OrdenController
                     'usuario_id' => $pen->usuario->persona->id,
                     'estado_orden_id' => $pen->estado_orden->id,
                     'servicios' => $serv,
-                    'ultimo_progreso' => $ultimoProgreso
+                    'ultimo_progreso' => $ultimoProgreso,
                 ];
                 $response[] = $aux;
             }
@@ -343,17 +348,186 @@ class OrdenController
 
     }
 
+    private function _ordenes($mes, $estado)
+    {
+        $ordenes = Orden::where('estado', 'A')
+            ->where('estado_orden_id', $estado)
+            ->whereMonth('created_at', $mes)->get();
+
+        return $ordenes;
+    }
+
+    public function cantidades_estados()
+    {
+        $this->cors->corsJson();
+        $pendiente = 1;
+        $proceso = 2;
+        $terminado = 3;
+
+        $mes = date('m');
+        $nombreMes = Helper::mes($mes);
+
+        $ordenesPendientes = $this->_ordenes($mes, $pendiente);
+        $ordenesProceso = $this->_ordenes($mes, $proceso);
+        $ordenesTerminado = $this->_ordenes($mes, $terminado);
+
+        $cantPendientes = ($ordenesPendientes->count()) ? $ordenesPendientes->count() : 0;
+        $cantProcesos = ($ordenesProceso->count()) ? $ordenesProceso->count() : 0;
+        $cantTerminados = ($ordenesTerminado->count()) ? $ordenesTerminado->count() : 0;
+
+        $response = [
+            'status' => true,
+            'cantidad' => [
+                'pendientes' => $cantPendientes,
+                'procesos' => $cantProcesos,
+                'terminados' => $cantTerminados,
+            ],
+            'mes' => $nombreMes,
+        ];
+        echo json_encode($response);
+    }
+
+    private function _OrdenesPagadas($mes, $estado, $pagado)
+    {
+
+        $ordenesPagadas = Orden::where('estado', 'A')
+            ->where('estado_orden_id', $estado)
+            ->where('pagado', $pagado)
+            ->whereMonth('created_at', $mes)->get();
+
+        return $ordenesPagadas;
+    }
+
+    public function contarOrdenesPagadas()
+    {
+        $this->cors->corsJson();
+        $atendido = 3;
+        $pagado = 'S';
+
+        $mes = date('m');
+        $nombreMes = Helper::mes($mes);
+
+        $ordenesAtendidas = $this->_OrdenesPagadas($mes, $atendido, $pagado);
+
+        $cantOrdenesAtendidasPagadas = ($ordenesAtendidas->count()) ? $ordenesAtendidas->count() : 0;
+
+        $response = [
+            'status' => true,
+            'cantidad' => [
+                'pagadas' => $cantOrdenesAtendidasPagadas,
+            ],
+            'mes' => $nombreMes,
+        ];
+        echo json_encode($response);
+    }
+
+    public function ordenesRealizados($params)
+    {
+        $this->cors->corsJson();
+
+        $inicio = $params['inicio'];
+        $fin = $params['fin'];
+        $estado_orden_id = intval($params['estado_orden_id']);
+        $top = intval($params['top']);
+
+        $ord = [];
+        $precio_general = 0;
+        $total_general = 0;
+
+        //todos
+        if ($estado_orden_id == -1) {
+            $ordenes = Orden::where('fecha', '>=', $inicio)
+                ->where('fecha', '<=', $fin)
+                ->orderBy('codigo')
+                ->take($top)->get();
+
+            foreach ($ordenes as $orde) {
+                $ordenservicio = $orde->orden_servicio;
+
+                foreach ($ordenservicio as $ser) {
+                    $servicio = $ser->servicio;
+                    $nombreServicio = $servicio->detalle;
+
+                    $aux = [
+                        'nombre_servicio' => $nombreServicio,
+                        'precio' => $servicio->precio,
+                        'total' => $orde->total,
+                    ];
+                    $ord[] = (object) $aux;
+                    $precio_general += $servicio->precio;
+                    $total_general += $orde->total;
+                }
+            }
+
+        } else {
+            $ordenes = Orden::where('estado_orden_id', $estado_orden_id)
+                ->where('fecha', '>=', $inicio)
+                ->where('fecha', '<=', $fin)
+                ->orderBy('codigo')
+                ->take($top)->get();
+
+            foreach ($ordenes as $orde) {
+
+                $ordenservicio = $orde->orden_servicio;
+
+                foreach ($ordenservicio as $ser) {
+                    $servicio = $ser->servicio;
+                    $nombreServicio = $servicio->detalle;
 
 
+                    $aux = [
+                        'nombre_servicio' => $nombreServicio,
+                        'precio' => $servicio->precio,
+                        
+                    ];
+                    $ord[] = (object) $aux;
+                    $precio_general += $servicio->precio;
+                    $total_general += $orde->total;
+                }
+            }
+        }
 
+        $response = [
+            'status' => true,
+            'mensaje' => 'Datos procesados',
+            'data' => $ord,
+            'total_general' => $total_general,
+            'precio_general' => $precio_general,
+        ];
 
+        echo json_encode($response);
 
+    }
+
+    public function graficaOrden()
+    {
+        $this->cors->corsJson();
+        $year = date('Y');
+
+        $meses = [
+            'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre',
+        ];
+        $data = [];
+
+        //Obtener total de las ordenes
+        for ($i = 0; $i < count($meses); $i++) {
+            $sqlOrden = "SELECT SUM(total ) as suma FROM `orden` WHERE MONTH(fecha) = ($i + 1) AND  YEAR(fecha) = $year AND estado = 'A'";
+
+            $ordenesMes = $this->conexion->database::select($sqlOrden);
+
+            $data[] = ($ordenesMes[0]->suma) ? round($ordenesMes[0]->suma, 2) : 0;
+
+            $response = [
+                'orden' => [
+                    'labels' => $meses,
+                    'data' => $data,
+                    'anio' => $year,
+                ],
+            ];
+        }
+        echo json_encode($response);
+    }
 
     
 
-
-
 }
-
-
-

@@ -15,26 +15,16 @@ class ClienteAccion
                 }else
                 if ($ruta == '/cliente/listar') {
                     Route::get('/cliente/listar', 'clienteController@listar');
-                } /*  else
-                if ($ruta == '/cliente/listar_vehiculo') {
-                    Route::get('/cliente/listar_vehiculo', 'clienteController@listarvehiculodatatable');
-                } */ else
+                } else
                 if ($ruta == '/cliente/datatable') {
                     Route::get('/cliente/datatable', 'clienteController@datatable');
                 } else
                 if ($ruta == '/cliente/buscar' && $params) {
                     Route::get('/cliente/buscar/:texto', 'clienteController@buscarCliente', $params);
-                } 
-                /* else
-                if ($ruta == '/cliente/vehiculo' && $params) {
-                    Route::get('/cliente/vehiculo/:id', 'clienteController@getVehiculo', $params);
-                } else
-                if ($ruta == '/cliente/buscar' && $params) {
-                    Route::get('/cliente/buscar/:id', 'clienteController@buscarCliente', $params);
                 } else
                 if ($ruta == '/cliente/contar') {
                     Route::get('/cliente/contar', 'clienteController@contar');
-                } */ else {
+                } else {
                     ErrorClass::e('404', 'No se encuentra la url');
                 }
                 break;
@@ -45,6 +35,9 @@ class ClienteAccion
                 }else
                 if ($ruta == '/cliente/eliminar') {
                     Route::post('/cliente/eliminar', 'clienteController@eliminar');
+                } else
+                if ($ruta == '/cliente/updateKilometraje') {
+                    Route::post('/cliente/updateKilometraje', 'clienteController@updateKilometraje');
                 } else {
                     ErrorClass::e('404', 'No se encuentra la url');
                 }
