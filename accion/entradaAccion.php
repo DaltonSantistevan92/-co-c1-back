@@ -2,8 +2,7 @@
 
 require_once 'app/error.php';
 
-class EntradaAccion
-{
+class EntradaAccion{
 
     public function index($metodo_http, $ruta, $params = null)
     {
@@ -23,9 +22,7 @@ class EntradaAccion
                 } else {
                     ErrorClass::e('404', 'No se encuentra la url');
                 }
-                break;
-
-           
+                break;    
         }
     }
 }

@@ -9,9 +9,11 @@ require_once './models/usuarioModel.php';
 class EntradaController {
 
     private $limiteKey = 0;
+    private $cors;
 
     public function __construct(){ 
         $this->limiteKey = 6;
+        $this->cors = new Cors();
     }
 
     public function create(Request $request){
