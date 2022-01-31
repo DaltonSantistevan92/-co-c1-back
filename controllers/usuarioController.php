@@ -10,6 +10,8 @@ require_once 'models/personaModel.php';
 require_once 'models/mecanicoModel.php';
 require_once 'controllers/personaController.php';
 require_once 'controllers/rolController.php';
+require_once 'tool/qr.php';
+require_once 'libs/phpqrcode/qrlib.php';
 
 
 class UsuarioController
@@ -26,6 +28,82 @@ class UsuarioController
         $this->personaController = new PersonaController();
         $this->rolCtr = new Rol();
 
+    } 
+
+    public function login2(Request $request)
+    {
+        $data = $request->input('login');
+
+        $entrada = $data->entrada;
+        $clave = $data->clave;
+        $encriptar = hash('sha256', $clave);
+
+        $this->cors->corsJson();
+        $response = [];
+
+        if ((!isset($entrada) || $entrada == "") || (!isset($clave) || $clave == "")) {
+            $response = [
+                'estatus' => false,
+                'mensaje' => 'Falta datos',
+            ];
+        } else {
+            $usuario = Usuario::where('usuario',$entrada)->get()->first();
+            $persona = Persona::where('correo',$entrada)->get()->first();
+
+            if($usuario){//x usuario
+                if($this->checkValidator($encriptar,$usuario->clave)){
+                    $usuario->persona;
+                    $rol = $usuario->rol;
+
+                    $per = Persona::find($usuario->persona_id);
+
+                    $usuario['persona'] = $per;
+                    $nombre = $per->nombres .' '.$per->apellidos; 
+                    
+                    $response = [
+                        'status' => true,
+                        'mensaje' => 'Acceso al sistema',
+                        'rol' => $rol,
+                        'persona' => $nombre,
+                        'usuario' => $usuario,
+                    ];
+                }else{
+                    $response =[
+                        'status' => false,
+                        'mensaje' => 'credenciales incorrecta'
+                    ];
+                }
+            }else if($persona){//x correo
+                $_user = Usuario::where('persona_id',$persona->id)->get()->first();
+                $_user['persona']=$persona;
+
+                if($this->checkValidator($encriptar,$_user->clave)){
+                    $rol = $_user->rol;
+                    $per = Persona::find($_user->persona_id);
+                    $nombre = $per->nombres .' '.$per->apellidos; 
+
+                    $response = [
+                        'status' => true,
+                        'mensaje' => 'Acceso al sistema',
+                        'rol' => $rol,
+                        'persona' => $nombre,
+                        'usuario' => $_user,
+                    ];
+                }else{
+                    $response =[
+                        'status' => false,
+                        'mensaje' => 'credenciales incorrecta'
+                    ];
+                }
+            }else{
+                $response =[
+                    'status' => false,
+                    'mensaje' => 'credenciales incorrecta'
+                ];
+
+            }        
+        }
+        echo json_encode($response);
     }
 
     public function buscar($params)
@@ -55,7 +133,6 @@ class UsuarioController
         echo json_encode($response);
     }
 
-
     public function guardar(Request $request)
     {
         $this->cors->corsJson();
@@ -73,6 +150,10 @@ class UsuarioController
 
             $id_pers = $resPersona['persona']->id;
 
+        
+            $qrCodeArray = $this->generarDatos($id_pers); 
+            $path = $this->generarQr($qrCodeArray[0],$qrCodeArray[1],$id_pers);
+
             $clave = $user->clave;
             $encriptar = hash('sha256', $clave);
             $user->rol_id = intval($user->rol_id);
@@ -83,6 +164,7 @@ class UsuarioController
             $usuario->usuario = $user->usuario;
             $usuario->img = $user->img;
             $usuario->clave = $encriptar;
+            $usuario->code_qr = $qrCodeArray[1];
             $usuario->conf_clave = $encriptar;
             $usuario->estado = 'A';
 
@@ -133,6 +215,43 @@ class UsuarioController
         echo json_encode($response);
     }
 
+    private function generarDatos($persona){
+
+        $pers = Persona::find($persona);        
+        $cedula =  $pers->cedula;
+        $nombrePersonales = $pers->nombres . '-' . $pers->apellidos;
+        
+        $nombre = $cedula.'-'.$nombrePersonales.'.png';
+        $auxCodigo = str_replace(' ','',$nombre);
+        $codigo = md5(sha1($auxCodigo));
+        
+        $array = [$nombre,$codigo]; 
+        return $array;
+        //$qr =  QRcode::png($cedula,$nombrePersonales,QR_ECLEVEL_L,10,2);
+    }
+  
+    private function generarQr($nombre,$codigo,$persona){
+        $persona = Persona::find($persona);
+        $nombreCompleto = $persona->nombres . ' ' .$persona->apellidos;
+        $privilegio = 777;
+        $path = 'resources/qrUsuario/'.$nombreCompleto;
+
+        if(!file_exists($path)){ //sino existe la ruta crear un directorio 
+            mkdir($path,$privilegio,true);   
+        }
+
+        if(file_exists($path.'/'.$nombre)){
+            unlink($path.'/'.$nombre);
+        }
+
+        $qr = new Qr($nombre);
+        $qr->generar($codigo, $path);
+        return $path;
+    }
+
+
+
+
     public function subirFichero($file)
     {
         $this->cors->corsJson();
@@ -143,7 +262,7 @@ class UsuarioController
         echo json_encode($response);
     }
 
-    public function login(Request $request)
+   /*  public function login(Request $request)
     {
         $data = $request->input('login');
 
@@ -165,17 +284,28 @@ class UsuarioController
 
             if ($usuario || $persona) {
                 $us = $usuario;
-
+                
                 if ($persona) {
                     $us = $persona->usuario[0];
                 }
+                
+                //echo json_encode($us); die();
 
                 //Segun con la verificacion de credenciales
                 if ($encriptar == $us->clave) {
-                    $persona = Persona::find($us->persona->id);
+                    //$personas = Persona::find($us->persona_id);
+                    $personas = Persona::find($us->persona->id);
+
+
+                   // echo json_encode($personas); die();
+
+                    $per = $personas->nombres . " " . $personas->apellidos;
+                    $rol = $us->rol->cargo;
 
                     $per = $us->persona->nombres . " " . $us->persona->apellidos;
                     $rol = $us->rol->cargo;
+
+                    $us->persona;
 
                     $response = [
                         'status' => true,
@@ -199,6 +329,17 @@ class UsuarioController
         }
 
         echo json_encode($response);
+    } */
+
+    
+
+    private function checkValidator($credencia1, $credencial2){
+        if($credencia1 == $credencial2){
+            return true;
+        }else{
+            return false;
+        }
+
     }
 
     public function dataTable()

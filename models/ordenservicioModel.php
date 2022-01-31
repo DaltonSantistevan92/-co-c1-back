@@ -3,6 +3,8 @@
 require_once 'vendor/autoload.php';
 require_once 'core/conexion.php';
 require_once 'models/ordenModel.php';
+require_once 'models/servicioModel.php';
+
 
 use Illuminate\Database\Eloquent\Model;
 
@@ -17,5 +19,12 @@ class OrdenServicio extends Model{
     {
         return $this->belongsTo(Orden::class);
     }
+
+    public function servicio()
+    {
+        return $this->belongsTo(Servicio::class);
+    }
+
+
 
 }

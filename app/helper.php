@@ -45,7 +45,7 @@ class Helper
     public static function mes($pos){
         $pos = intval($pos) -1;
 
-        $array = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+        $array = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
         return $array[$pos];
     }
 
@@ -120,6 +120,67 @@ class Helper
             }else{
                 return $since_start->y.' años';
             }
+        }
+    }
+
+    public static function move_to($origen,$destino){
+        copy($origen,$destino);
+        unlink($origen);
+    }
+
+    public static function getDia($id){
+        $array = ['Domingo','Lunes','Martes','Miercoles','Jueves','Viernes','Sabado'];
+        return $array[$id];
+    }
+   
+    public static function getDay(){
+        return date('d');
+    }
+
+    public static function getSemana($id){
+        $dia_base = Helper::getDia($id);
+        $dia_hoy = Helper::getDia(date('w'));
+        $fecha_actual = date("Y-m-d");
+        $auxDate = '';
+
+        if($dia_hoy === $dia_base){
+            return date('d');
+        }else{
+
+            switch($dia_hoy){
+                case 'Domingo':
+                //sumo 1 día
+                $auxDate = date("Y-m-d",strtotime($fecha_actual."+ 1 days")); 
+                break;
+
+                case 'Martes':
+                    //sumo 6 día
+                $auxDate = date("Y-m-d",strtotime($fecha_actual."+ 6 days")); 
+                break;
+                
+                case 'Miercoles':
+                        //sumo 5 día
+                $auxDate = date("Y-m-d",strtotime($fecha_actual."+ 5 days"));
+                break;
+                
+                case 'Jueves':
+                        //sumo 4 día
+                $auxDate = date("Y-m-d",strtotime($fecha_actual."+ 4 days"));
+                break;
+                
+                case 'Viernes':
+                        //sumo 3 día
+                $auxDate = date("Y-m-d",strtotime($fecha_actual."+ 3days"));
+                break;
+
+                case 'Sabado':
+                        //sumo 2 día
+                $auxDate = date("Y-m-d",strtotime($fecha_actual."+ 2 days"));
+                break;
+            }
+
+            $auxDate = explode('-',$auxDate);
+            return intval($auxDate[2]);
         }
     }
 }

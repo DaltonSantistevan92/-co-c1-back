@@ -32,7 +32,7 @@ class UsuarioAccion
 
             case 'post':
                 if ($ruta == '/usuario/login') {
-                    Route::post('/usuario/login', 'usuarioController@login');
+                    Route::post('/usuario/login', 'usuarioController@login2');
                 } else
                 if ($ruta == '/usuario/save') {
                     Route::post('/usuario/save', 'usuarioController@guardar');

@@ -453,5 +453,27 @@ class VehiculoController
 
     }
 
+    public function contar(){
+        $this->cors->corsJson();
+        $vehiculos = Vehiculo::where('estado','A')->get();
+        $response = [];
+        if($vehiculos){
+            $response = [
+                'status' => true,
+                'mensaje' => 'Existen Vehiculo',
+                'Modelo' => 'Vehiculo',
+                'cantidad' => $vehiculos->count()
+            ];
+        }else{
+            $response = [
+                'status' => false,
+                'mensaje' => 'No Existen Vehiculo',
+                'Modelo' => 'Vehiculo',
+                'cantidad' => 0
+            ];
+        }
+        echo json_encode($response);
+    }
+
     
 }

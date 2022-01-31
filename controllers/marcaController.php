@@ -56,7 +56,7 @@ class MarcaController
             $response = [
                 'status' => false,
                 'mensaje' => 'No Existen Datos',
-                'marca' => $datamarcas
+                'marca' => null
             ];
 
         }

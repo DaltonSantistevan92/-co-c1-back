@@ -22,6 +22,9 @@ class ServicioAccion
                 }else
                 if ($ruta == '/servicio/buscarServicio' & $params) {
                     Route::get('/servicio/buscarServicio/:texto', 'servicioController@buscarServicio', $params);
+                }else
+                if ($ruta == '/servicio/contar') {
+                    Route::get('/servicio/contar', 'servicioController@contar');
                 }else{
                     ErrorClass::e('400', 'No ha enviado parámetros por la url');
                     }      

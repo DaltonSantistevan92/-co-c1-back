@@ -252,4 +252,26 @@ class ServicioController
         return $response;
     }
 
+    public function contar(){
+        $this->cors->corsJson();
+        $servicios = Servicio::where('estado','A')->get();
+        $response = [];
+        if($servicios){
+            $response = [
+                'status' => true,
+                'mensaje' => 'Existen Servicios',
+                'Modelo' => 'Servicios',
+                'cantidad' => $servicios->count()
+            ];
+        }else{
+            $response = [
+                'status' => false,
+                'mensaje' => 'No Existen Servicios',
+                'Modelo' => 'Servicios',
+                'cantidad' => 0
+            ];
+        }
+        echo json_encode($response);
+    }
+
 }

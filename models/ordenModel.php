@@ -4,7 +4,7 @@ require_once 'vendor/autoload.php';
 require_once 'core/conexion.php';
 require_once 'models/usuarioModel.php';
 require_once 'models/clienteModel.php';
-require_once 'models/estadoModel.php';
+require_once 'models/estado_ordenModel.php';
 require_once 'models/progresoModel.php';
 require_once 'models/ordenservicioModel.php';
 require_once 'models/comprobantesModel.php';
@@ -46,7 +46,7 @@ class Orden extends Model
      //Muchos a uno --- uno a muchos(Inverso)
     public function estado_orden()
     {
-        return $this->belongsTo(Estado::class);
+        return $this->belongsTo(Estado_Orden::class);
     }
 
      //uno a muchos

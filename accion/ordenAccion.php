@@ -27,8 +27,19 @@ class OrdenAccion
                 }else
                 if ($ruta == '/orden/estadoPagada' && $params) {
                     Route::get('/orden/estadoPagada/:id_persona/:estado_id', 'ordenController@estadoPagada', $params);
-                }
-                 else {
+                }else
+                if($ruta == '/orden/cantidades_estados'){
+                    Route::get('/orden/cantidades_estados', 'ordenController@cantidades_estados');
+                }else
+                if($ruta == '/orden/cantidad_pagadas'){
+                    Route::get('/orden/cantidad_pagadas', 'ordenController@contarOrdenesPagadas');
+                }else
+                if ($ruta == '/orden/estadoOrden' && $params) {//falta x terminar
+                    Route::get('/orden/estadoOrden/:inicio/:fin/:estado_orden_id/:top', 'ordenController@ordenesRealizados', $params);
+                }else
+                if($ruta == '/orden/graficaOrden'){
+                    Route::get('/orden/graficaOrden', 'ordenController@graficaOrden');
+                } else {
                     ErrorClass::e('404', 'No se encuentra la url');
                 }
                 break;

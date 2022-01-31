@@ -33,6 +33,9 @@ class VehiculoAccion
                 }else
                 if ($ruta == '/vehiculo/buscarxplaca' && $params) {
                     Route::get('/vehiculo/buscarxplaca/:id', 'vehiculoController@buscarxplaca', $params);
+                }else
+                if ($ruta == '/vehiculo/contar') {
+                    Route::get('/vehiculo/contar', 'vehiculoController@contar');
                 }else {
                     ErrorClass::e('404', 'No se encuentra la url');
                 }
