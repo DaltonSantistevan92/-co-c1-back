@@ -51,7 +51,7 @@ class Request
 
     public function input($nombreData)
     {
-        //var_dump($this->data);
+        //var_dump($this->data); die();
 
         if (isset($this->data->$nombreData)) {
             if (property_exists($this->data, $nombreData)) {
