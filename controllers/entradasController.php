@@ -3,10 +3,12 @@
 require_once 'app/cors.php';
 require_once 'app/request.php';
 require_once 'core/conexion.php';
-require_once 'models/entradaModel.php';
+require_once 'models/entradasModel.php';
 require_once 'models/usuarioModel.php';
+require_once 'app/helper.php';
 
-class EntradaController
+
+class EntradasController
 {
 
     private $limiteKey = 0;
@@ -18,9 +20,8 @@ class EntradaController
         $this->cors = new Cors();
     }
 
-    public function create(Request $request)
+    public function guardar(Request $request)
     {
-        echo json_encode($request); die();
         $this->cors->corsJson();
         $entradaData = $request->input('entrada');
         if ($entradaData) {
@@ -30,7 +31,7 @@ class EntradaController
             if ($user) {
                 //Buscar el usuario
                 $helper = new Helper();
-                $entrada = new Entrada();
+                $entrada = new Entradas();
 
                 $entrada->usuario_id = $user->id;
                 $entrada->clave = $helper->generate_key($this->limiteKey);
@@ -61,7 +62,7 @@ class EntradaController
     {
         $usuario_id = intval($params['usuario_id']);
 
-        $last = Entrada::where('usuario_id', $usuario_id)->orderBy('id', 'desc')->first();
+        $last = Entradas::where('usuario_id', $usuario_id)->orderBy('id', 'desc')->first();
 
         if ($last) {
             $response = [
@@ -78,5 +79,26 @@ class EntradaController
         }
 
         echo json_encode($response);
+    }
+
+    public function buscarEntrada($usuario_id)
+    {
+        $last = Entradas::where('usuario_id', $usuario_id)->orderBy('id', 'desc')->first();
+
+        if ($last) {
+            $response = [
+                'status' => true,
+                'message' => 'Existe un dato',
+                'data' => $last,
+            ];
+        } else {
+            $response = [
+                'status' => false,
+                'message' => 'No existe datos',
+                'data' => false,
+            ];
+        }
+
+        return $response;
     }
 }
