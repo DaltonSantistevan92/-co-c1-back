@@ -17,8 +17,9 @@ class EntradaAccion{
                 break;
 
             case 'post':
-                if ($ruta == '/entrada/create') {
-                    Route::post('/entrada/create', 'entradaController@create');
+                if ($ruta == '/entrada/guardar') {
+                    //var_dump($_POST); die();
+                    Route::post('/entrada/guardar', 'entradaController@create');
                 } else {
                     ErrorClass::e('404', 'No se encuentra la url');
                 }
