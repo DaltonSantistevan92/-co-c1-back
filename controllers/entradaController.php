@@ -18,10 +18,10 @@ class EntradaController {
 
         $this->cors->corsJson();
         $entradaData = $request->input('entrada');
-        $entradaData->qr;
+        $entradaData->qr = trim($entradaData->qr);
 
         //Buscar el usuario
-        $user = Usuario::where('code_qr')->first();
+        $user = Usuario::where('code_qr', $entradaData->qr)->first();
         $helper = new Helper();
         $entrada = new Entrada();
 
