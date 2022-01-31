@@ -4,7 +4,7 @@ require_once 'vendor/autoload.php';
 require_once 'core/conexion.php';
 require_once 'models/personaModel.php';
 require_once 'models/rolModel.php';
-require_once 'models/entradaModel.php';
+require_once 'models/entradasModel.php';
 require_once 'models/salidaModel.php';
 require_once 'models/rol_pagoModel.php';
 
@@ -32,7 +32,7 @@ class Usuario extends Model
     }
 
     public function entrada(){
-        return $this->hasMany(Entrada::class);
+        return $this->hasMany(Entradas::class);
     }
 
     public function salida(){

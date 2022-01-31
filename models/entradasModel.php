@@ -6,7 +6,7 @@ require_once 'models/usuarioModel.php';
 
 use Illuminate\Database\Eloquent\Model;
 
-class Entrada extends Model
+class Entradas extends Model
 {
 
     protected $table = "entradas";
