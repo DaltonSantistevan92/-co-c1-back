@@ -7,7 +7,7 @@ require_once 'models/rolModel.php';
 require_once 'models/entradasModel.php';
 require_once 'models/salidaModel.php';
 require_once 'models/rol_pagoModel.php';
-
+require_once 'models/detalles_pagosModel.php';
 
 
 use Illuminate\Database\Eloquent\Model;
@@ -42,5 +42,11 @@ class Usuario extends Model
     public function rol_pago(){
         return $this->hasMany(Rol_Pago::class);
     }
+
+    public function detalle_pago(){
+        return $this->hasMany(Detalles_Pagos::class);
+    }
+
+    
 } 
  
