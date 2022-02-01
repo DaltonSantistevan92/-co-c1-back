@@ -12,10 +12,8 @@ class Rol_PagoAccion
             case 'get':
                 if ($ruta == '/rol_pago/listar') {
                     Route::get('/rol_pago/listar', 'rol_pagoController@listar');
-                }else
-                if ($ruta == '/rol_pago/realizadas') {
-                    Route::get('/rol_pago/realizadas', 'rol_pagoController@realizadas');
-                }else{
+                }
+                else{
                     ErrorClass::e('400', 'No ha enviado parámetros por la url');
                 }
             break;

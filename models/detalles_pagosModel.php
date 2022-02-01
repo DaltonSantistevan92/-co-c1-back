@@ -12,7 +12,7 @@ class Detalles_Pagos extends Model
 {
 
     protected $table = "detalles_pagos";
-    protected $fillable = ['usuario_id','cant_hora','precio_hora','total'];
+    protected $fillable = ['usuario_id','cant_hora','precio_hora','total', 'type'];
 
     //Muchos a uno --- uno a muchos(Inverso)
     public function usuario()

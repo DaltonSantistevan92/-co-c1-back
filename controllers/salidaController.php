@@ -6,10 +6,10 @@ require_once 'core/conexion.php';
 require_once 'models/salidaModel.php';
 require_once 'models/usuarioModel.php';
 require_once 'controllers/entradasController.php';
+require_once 'controllers/rol_pagoController.php';
 require_once 'app/helper.php';
 
-class SalidaController
-{
+class SalidaController{
 
     private $cors;
     private $entradaCtrl;
@@ -47,6 +47,11 @@ class SalidaController
                     $nuevoSalida->hora = date('H:i:s');
                     $nuevoSalida->fecha = date('Y-m-d');
                     $nuevoSalida->save();
+
+                    //Llamar a método para crear un detalle pago en base a la salida
+                    $rolePayCtrl = new Rol_PagoController();
+                    $rolePayCtrl->create_detail_pay($entradaUsuario->clave);
+                    //metod->algo($clave);
 
                     $response = [
                         'status' => true,
