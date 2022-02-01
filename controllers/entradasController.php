@@ -86,19 +86,10 @@ class EntradasController
         $last = Entradas::where('usuario_id', $usuario_id)->orderBy('id', 'desc')->first();
 
         if ($last) {
-            $response = [
-                'status' => true,
-                'message' => 'Existe un dato',
-                'data' => $last,
-            ];
+            return $last;   
         } else {
-            $response = [
-                'status' => false,
-                'message' => 'No existe datos',
-                'data' => false,
-            ];
+            return false;
         }
-
-        return $response;
+ 
     }
 }
