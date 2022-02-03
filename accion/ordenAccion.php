@@ -42,6 +42,9 @@ class OrdenAccion
                 }else
                 if($ruta == '/orden/servicioFrecuente' && $params){
                     Route::get('/orden/servicioFrecuente/:inicio/:fin/:top', 'ordenController@servicioFrecuente', $params);
+                }else
+                if($ruta == '/orden/mantenimientoRegresionLineal' && $params){
+                    Route::get('/orden/mantenimientoRegresionLineal/:inicio/:fin', 'ordenController@mantenimientoRegresionLineal', $params);
                 } else {
                     ErrorClass::e('404', 'No se encuentra la url');
                 }
