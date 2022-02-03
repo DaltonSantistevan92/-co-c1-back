@@ -41,18 +41,18 @@ class EntradasController
 
                 $response = [
                     'status' => true,
-                    'message' => 'Entrada registrada de ' . $user->usuario,
+                    'mensaje' => 'Entrada registrada de ' . $user->usuario,
                 ];
             } else {
                 $response = [
                     'status' => false,
-                    'message' => 'No se pudo registrar la entrada',
+                    'mensaje' => 'No se pudo registrar la entrada',
                 ];
             }
         } else {
             $response = [
                 'status' => false,
-                'message' => 'no hay datos para procesar',
+                'mensaje' => 'no hay datos para procesar',
             ];
         }
         echo json_encode($response);
@@ -67,13 +67,13 @@ class EntradasController
         if ($last) {
             $response = [
                 'status' => true,
-                'message' => 'Existe un dato',
+                'mensaje' => 'Existe un dato',
                 'data' => $last,
             ];
         } else {
             $response = [
                 'status' => false,
-                'message' => 'No existe datos',
+                'mensaje' => 'No existe datos',
                 'data' => false,
             ];
         }

@@ -55,7 +55,7 @@ class SalidaController{
 
                     $response = [
                         'status' => true,
-                        'message' => 'Salida registrada de ' . $usuario->persona->nombres,
+                        'mensaje' => 'Salida registrada de ' . $usuario->persona->nombres,
                     ];
 
                 }

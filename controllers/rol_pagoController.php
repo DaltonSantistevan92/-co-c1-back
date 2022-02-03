@@ -47,7 +47,7 @@ class Rol_PagoController {
         //Verify hour most 8 and mechanic
         if($user->rol_id == $this->roleMechanic){   
             if($hour > $this->hourLaborable){  
-                $diff = $hour - $this->hourLaborable;
+                $diff = ($hour - $this->hourLaborable);
 
                 //Normal
                 $newCal = round(floatval($this->hourLaborable) * floatval($salario->salario_hora), 2);
@@ -69,12 +69,12 @@ class Rol_PagoController {
             $detail = $this->makeDetail($user->id, $hour, $salario->salario_hora, $total);
         }
         
-        $response = [
+        /* $response = [
             'status' => true,
-            'message' => 'Detail hour generated !!'
+            'mensaje' => 'Detail hour generated !!'
         ];
 
-        echo json_encode($response);
+        echo json_encode($response); */
     }
     
     private function makeDetail($user_id, $hour, $sale_hour, $total, $type = 'N'){

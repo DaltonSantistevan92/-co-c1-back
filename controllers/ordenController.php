@@ -528,6 +528,44 @@ class OrdenController
         echo json_encode($response);
     }
 
+    public function servicioFrecuente($params){
+        $this->cors->corsJson();
+        $inicio = $params['inicio'];
+        $fin = $params['fin'];
+        $top = intval($params['top']);
+        $ordenesTerminadas = 3;
+
+        $orden = Orden::where('fecha', '>=', $inicio)->where('fecha', '<=', $fin)->where('estado', 'A')
+                    ->where('estado_orden_id',$ordenesTerminadas)->where('pagado','S')->take($top)->get();
+        
+        $servicio_id = []; $secondServicio = [];
+
+        foreach($orden as $or){
+            $_ordSer = $or->orden_servicio;
+            foreach($_ordSer as $item){
+                $_orServi_id = $item->id;
+                $_orden_id = $item->orden_id;
+                $_servi_id = $item->servicio->id;     
+            }
+            $aux = [
+                'orden_servicio_id' => $_orServi_id,
+                'orden_id' => $_orden_id,
+                'servicio_id' => $_servi_id,
+            ];
+            $servicio_id[] = (object)$aux;
+            $secondServicio[]= $_servi_id; 
+
+        }
+        
+        echo json_encode($servicio_id);
+        echo json_encode($secondServicio); die();
+
+
+        
+
+
+    }
+
     
 
 }
