@@ -566,6 +566,45 @@ class OrdenController
 
     }
 
+    public function mantenimientoRegresionLineal($params){
+        $inicio = $params['inicio'];
+        $fin = $params['fin'];
+
+        $ordenesTerminadas = 3;
+
+        $orden = Orden::where('fecha', '>=', $inicio)->where('fecha', '<=', $fin)->where('estado', 'A')
+                    ->where('estado_orden_id',$ordenesTerminadas)->where('pagado','S')->get();
+        $data = []; 
+        foreach($orden as $_ord){
+            $total = $_ord->total;
+
+            $_ordSer = $_ord->orden_servicio;
+            foreach($_ordSer as $item){
+                $_orServi_id = $item->id;
+                $_orden_id = $item->orden_id;
+                $_servi_id = $item->servicio->id;     
+            }
+
+            $aux = [
+                'orden_servicio_id' => $_orServi_id,
+                'orden_id' => $_orden_id,
+                'servicio_id' => $_servi_id,
+                'total' => $total
+            ];
+            $data[] = (object)$aux;
+
+
+
+        }
+
+        echo json_encode($data);
+        
+
+
+        
+
+    }
+
     
 
 }
