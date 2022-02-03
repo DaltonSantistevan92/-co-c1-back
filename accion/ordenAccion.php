@@ -39,6 +39,9 @@ class OrdenAccion
                 }else
                 if($ruta == '/orden/graficaOrden'){
                     Route::get('/orden/graficaOrden', 'ordenController@graficaOrden');
+                }else
+                if($ruta == '/orden/servicioFrecuente' && $params){
+                    Route::get('/orden/servicioFrecuente/:inicio/:fin/:top', 'ordenController@servicioFrecuente', $params);
                 } else {
                     ErrorClass::e('404', 'No se encuentra la url');
                 }
