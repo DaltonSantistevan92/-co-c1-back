@@ -24,7 +24,9 @@ class Rol_PagoController {
 
     public function guardar(Request $request) { }
 
-    public function create_detail_pay($key){
+    public function create_detail_pay($params){
+
+        $key = $params['clave'];
 
         //Search entry and sale
         $entry = Entradas::where('clave', $key)->first();
@@ -46,7 +48,10 @@ class Rol_PagoController {
         $detail = null;
         //Verify hour most 8 and mechanic
         if($user->rol_id == $this->roleMechanic){   
+            // var_dump($hour);    die();
+
             if($hour > $this->hourLaborable){  
+
                 $diff = ($hour - $this->hourLaborable);
 
                 //Normal
@@ -69,12 +74,12 @@ class Rol_PagoController {
             $detail = $this->makeDetail($user->id, $hour, $salario->salario_hora, $total);
         }
         
-        /* $response = [
+        $response = [
             'status' => true,
             'mensaje' => 'Detail hour generated !!'
         ];
 
-        echo json_encode($response); */
+        echo json_encode($response);
     }
     
     private function makeDetail($user_id, $hour, $sale_hour, $total, $type = 'N'){

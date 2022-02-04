@@ -481,7 +481,20 @@ class UsuarioController
         echo json_encode($response);
     }
     
-    
-   
+    public function listUsers(){
+
+        $users = Usuario::where('rol_id', '<>', 4)->where('estado', 'A')->get();
+        $resp = [];
+
+        if($users->count() > 0){
+            $resp = $users;
+            foreach($resp as $item){
+                $item->persona;
+                $item->rol;
+            }
+        } 
+        
+        echo json_encode($resp);
+    }
 
 }

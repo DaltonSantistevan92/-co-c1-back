@@ -24,6 +24,9 @@ class UsuarioAccion
                 } else
                 if ($ruta == '/usuario/datatable') {
                     Route::get('/usuario/datatable', 'usuarioController@dataTable');
+                }else
+                if($ruta == '/usuario/list'){
+                    Route::get('/usuario/list', 'usuarioController@listUsers');
                 }
                 else {
                     ErrorClass::e(404, "La ruta no existe");

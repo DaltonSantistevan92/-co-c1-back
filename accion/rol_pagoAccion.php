@@ -10,6 +10,9 @@ class Rol_PagoAccion
 
         switch ($metodo_http) {
             case 'get':
+                if($ruta == '/rol_pago/cal' && $params){
+                    Route::get('rol_pago/calc/:clave', 'rol_pagoController@create_detail_pay', $params);
+                }else
                 if ($ruta == '/rol_pago/listar') {
                     Route::get('/rol_pago/listar', 'rol_pagoController@listar');
                 }
@@ -24,10 +27,7 @@ class Rol_PagoAccion
                 }else{
                     ErrorClass::e('400', 'No ha enviado parámetros por la url');
                 }
-               
-
             break;
-   
         }
     }
 }
