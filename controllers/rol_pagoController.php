@@ -94,4 +94,76 @@ class Rol_PagoController {
 
         return $detailPay;
     }
+
+    public function createRolPago($params){
+
+        $inicio = $params['inicio'];
+        $fin = $params['fin'];
+        $user_id = intval($params['user_id']);
+
+        //Consultar a los detalles pagos
+        $detalleHorasNormal = Detalles_Pagos::where('usuario_id', $user_id)->where('type', 'N')
+            ->whereDate('created_at','>=', $inicio)->whereDate('created_at', '<=', $fin)->get();
+        $detalleHorasExtras = Detalles_Pagos::where('usuario_id', $user_id)->where('type', 'E')
+            ->whereDate('created_at','>=', $inicio)->whereDate('created_at', '<=', $fin)->get();
+        $detalleHorasTotales = Detalles_Pagos::where('usuario_id', $user_id)
+            ->whereDate('created_at','>=', $inicio)->whereDate('created_at', '<=', $fin)->get();
+          
+        $response = [];
+        $hoursExtras = 0;   $horas_normal = 0;
+        $totalExtras = 0;   $totalNormal = 0;
+
+        foreach($detalleHorasTotales as $extra){
+
+            if($extra->type == 'E'){
+                $hoursExtras += $extra->cant_hora;
+                $totalExtras += $extra->total;
+            }
+
+            if($extra->type == 'N'){
+                $horas_normal += $extra->cant_hora;
+                $totalNormal += $extra->total;
+            }
+        }
+
+        $user = Usuario::find($user_id);
+        $cargo = $user->rol->cargo;
+        $porcentaje_iess = 5;
+
+        $total = $totalExtras + $totalNormal;
+        $aporteIess = round(floatval(($total * $porcentaje_iess)/100),2);
+
+        $sueldo = $total - $aporteIess;
+
+        $response = [
+            'usuario_id' => $user_id,
+            'cargo' => $cargo,
+            'horas_normales' => $horas_normal,
+            'horas_extras' => $hoursExtras,
+            'total_normal' => $totalNormal,
+            'total_extra' => $totalExtras,
+            'porcentaje_iess' => $porcentaje_iess,
+            'aporte_iess' => $aporteIess,
+            'total_ingresos' => $total,
+            'total_descuentos' => 0,
+            'sueldo_recibir' => $sueldo
+        ];
+
+        //Guardar el rol_pago
+        $rolPago = new Rol_Pago();
+        $rolPago->usuario_id = $response['usuario_id'];
+        $rolPago->horas_normales = $response['horas_normales'];
+        $rolPago->horas_extras = $response['horas_extras'];
+        $rolPago->total_normal = $response['total_normal'];
+        $rolPago->total_extra = $response['total_extra'];
+        $rolPago->porcentaje_iess = $response['porcentaje_iess'];
+        $rolPago->aporte_iess = $response['aporte_iess'];
+        $rolPago->total_ingresos = $response['total_ingresos'];
+        $rolPago->total_descuentos = $response['total_descuentos'];
+        $rolPago->sueldo_recibir = $response['sueldo_recibir'];
+
+        $rolPago->save();
+        
+        echo json_encode($response);
+    }
 }

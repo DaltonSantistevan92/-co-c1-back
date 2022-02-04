@@ -13,6 +13,9 @@ class Rol_PagoAccion
                 if($ruta == '/rol_pago/cal' && $params){
                     Route::get('rol_pago/calc/:clave', 'rol_pagoController@create_detail_pay', $params);
                 }else
+                if($ruta == '/rol_pago/create' && $params){
+                    Route::get('rol_pago/create/:inicio/:fin/:user_id', 'rol_pagoController@createRolPago', $params);
+                }else    
                 if ($ruta == '/rol_pago/listar') {
                     Route::get('/rol_pago/listar', 'rol_pagoController@listar');
                 }

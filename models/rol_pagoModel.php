@@ -10,7 +10,7 @@ class Rol_Pago extends Model
 {
 
     protected $table = "rol_pagos";
-    protected $fillable = ['usuario_id','cant_horas_extas','horas_extras','porcentaje_iess','aporte_iess','total_ingresos','total_descuentos','sueldo_recibir']; 
+    protected $fillable = ['usuario_id','horas_normales','horas_extras', 'total_normal', 'total_extra','porcentaje_iess','aporte_iess','total_ingresos','total_descuentos','sueldo_recibir']; 
     public $timestamps = false;
 
     
