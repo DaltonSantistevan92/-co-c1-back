@@ -138,6 +138,7 @@ class Rol_PagoController {
         $response = [
             'usuario_id' => $user_id,
             'cargo' => $cargo,
+            'persona' => $user->persona,
             'horas_normales' => $horas_normal,
             'horas_extras' => $hoursExtras,
             'total_normal' => $totalNormal,
@@ -163,7 +164,7 @@ class Rol_PagoController {
         $rolPago->sueldo_recibir = $response['sueldo_recibir'];
 
         $rolPago->save();
-        
+
         echo json_encode($response);
     }
 }
