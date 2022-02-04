@@ -9,6 +9,7 @@ require_once 'models/ordenModel.php';
 require_once 'models/clienteModel.php';
 require_once 'models/usuarioModel.php';
 require_once 'models/progresoModel.php';
+require_once 'models/servicioModel.php';
 require_once 'controllers/ordenservicioController.php';
 require_once 'controllers/servicioController.php';
 
@@ -538,31 +539,175 @@ class OrdenController
         $orden = Orden::where('fecha', '>=', $inicio)->where('fecha', '<=', $fin)->where('estado', 'A')
                     ->where('estado_orden_id',$ordenesTerminadas)->where('pagado','S')->take($top)->get();
         
-        $servicio_id = []; $secondServicio = [];
+        $data = [];  $dataServicio_id = []; $total_general = 0;
 
-        foreach($orden as $or){
-            $_ordSer = $or->orden_servicio;
+        foreach($orden as $_ord){
+            $c = 0;
+            $_ordSer = $_ord->orden_servicio;
+            $total = $_ord->total;
+            $cliente_id = $_ord->cliente_id;
             foreach($_ordSer as $item){
                 $_orServi_id = $item->id;
                 $_orden_id = $item->orden_id;
-                $_servi_id = $item->servicio->id;     
+                $_servi_id = $item->servicio->id; 
+                
+                $servicioOrden = OrdenServicio::where('orden_id',$_orden_id)->get();
+                foreach($servicioOrden as $o){
+                   $o->servicio->detalle;
+                }
+                $c++;   
+            }
+      
+            $aux = [
+                'orden_servicio_id' => $_orServi_id,
+                'cliente_id' => $cliente_id,
+                'orden_id' => $_orden_id,
+                'servicio_id' => $_servi_id,
+                'orden_servicio' => $servicioOrden,
+                'cantidad' => $c,
+                'total' => $total
+            ];
+            $data[] = (object)$aux;
+            $dataServicio_id[] = $_servi_id;
+            $total_general += $_ord->total;
+        }
+
+        $noRepetidos = array_values(array_unique($dataServicio_id));
+        $newArray = [];  $contador = 0;  
+
+        //algoritmo para contar y eliminar los elementos repetidos de un array
+        for ($i = 0; $i < count($noRepetidos); $i++) {
+            foreach ($data as $item) {
+                if ($item->servicio_id === $noRepetidos[$i]) {
+                    $_cliente_id = $item->cliente_id;
+                    $_orden_id = $item->orden_id;
+                    $contador += $item->cantidad;                
+                }
             }
             $aux = [
+                'orden_id' => $_orden_id,
+                'cliente_id' => $_cliente_id,
+                'servicio_id' => $noRepetidos[$i],
+                'cantidad' => $contador,
+            ];
+
+            $contador = 0;
+            $newArray[] = (object) $aux;
+            $aux = [];
+        }
+
+        $arrayOrdenado = $this->ordenarArray($newArray);
+        $arrayOrdenado = Helper::invertir_array($arrayOrdenado);
+
+        $arraySec = [];
+
+        //recortar segun su top
+        if (count($arrayOrdenado) < $top) {
+            $arraySec = $arrayOrdenado;
+        } else if (count($arrayOrdenado) == $top) {
+            $arraySec = $arrayOrdenado;
+        } else if (count($arrayOrdenado) > $top) {
+            for ($i = 0; $i < $top; $i++) {
+                $arraySec[] = $arrayOrdenado[$i];
+            }
+        }
+        //arma la data mas frecuentes para un grafico estadistico
+        $labelsClientes = [];
+        foreach($arraySec as $asec){
+            $ordenes = Orden::find($asec->orden_id);
+            $labelsClientes[] = $ordenes->cliente->persona->nombres.' '.$ordenes->cliente->persona->apellidos;
+            $cantidad[] = $asec->cantidad;
+        }
+        
+        //armar la data en una lista
+        foreach($data as $d){
+            $orden = Orden::find($d->orden_id);
+            $codigo = $orden->codigo;
+
+            $cliente = Cliente::find($d->cliente_id);
+            $nombreClientes = $cliente->persona->nombres. ' '. $cliente->persona->apellidos;
+
+            $total = $d->total;
+            $aux = [
+                'codigo' => $codigo,
+                'cliente-id' => $d->cliente_id,
+                'nombre' => $nombreClientes,
+                'servicio_id' => $d->servicio_id,
+                'servicio' => $d->orden_servicio, 
+                'total' => $total,
+            ];
+            $final[] = (object)$aux;
+        }
+
+        $response = [
+            'lista_servicio' => $final,
+            'data' =>[
+                'masFrecuentes' => [
+                    'labels'=> $labelsClientes,
+                    'cantidad' => $cantidad
+                ],
+            ],
+            'total_general' => $total_general,     
+        ];
+    
+        echo json_encode($response); die();    
+    }
+
+    function ordenarArray($array){
+        for ($i=1; $i < count($array); $i++) { 
+            for ($j=0; $j < count($array) - $i; $j++) { 
+                if($array[$j] > $array[$j + 1]){
+                    $chelas = $array[$j + 1];
+                    $array[$j + 1] = $array[$j];
+                    $array[$j] = $chelas;
+                }
+            }
+            
+        }
+        return $array;
+    }
+
+    public function mantenimientoRegresionLineal($params){
+        $this->cors->corsJson();
+        $inicio = $params['inicio'];
+        $fin = $params['fin'];
+
+        $ordenesTerminadas = 3;
+
+        $orden = Orden::where('fecha', '>=', $inicio)->where('fecha', '<=', $fin)->where('estado', 'A')
+                    ->where('estado_orden_id',$ordenesTerminadas)->where('pagado','S')->get();
+
+        $data = [];  $dataServicio_id = [];
+
+        foreach($orden as $_ord){
+            $c = 0;
+            $_ordSer = $_ord->orden_servicio;
+            $total = $_ord->total;
+            $cliente_id = $_ord->cliente_id;
+            foreach($_ordSer as $item){
+                $_orServi_id = $item->id;
+                $_orden_id = $item->orden_id;
+                $_servi_id = $item->servicio->id;  
+                $c++;   
+            }
+
+            $aux = [
+                'cliente_id' => $cliente_id,
                 'orden_servicio_id' => $_orServi_id,
                 'orden_id' => $_orden_id,
                 'servicio_id' => $_servi_id,
+                'cantidad' => $c,
+                'total' => $total
             ];
-            $servicio_id[] = (object)$aux;
-            $secondServicio[]= $_servi_id; 
-
+            $data[] = (object)$aux;
+            $dataServicio_id[] = $_servi_id;
         }
-        
-        echo json_encode($servicio_id);
-        echo json_encode($secondServicio); die();
-
 
         
 
+        echo json_encode($data);
+        echo json_encode($dataServicio_id);
+        
 
     }
 
