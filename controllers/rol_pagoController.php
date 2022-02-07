@@ -1,11 +1,16 @@
 <?php
 
-use Illuminate\Support\Facades\Date;
 
 require_once 'app/cors.php';
 require_once 'core/conexion.php';
 require_once 'app/request.php';
 require_once 'models/rol_pagoModel.php';
+require_once 'models/usuarioModel.php';
+require_once 'models/detalles_pagosModel.php';
+require_once 'models/salidaModel.php';
+require_once 'models/entradasModel.php';
+require_once 'models/salarioModel.php';
+
 
 
 class Rol_PagoController
@@ -23,9 +28,6 @@ class Rol_PagoController
         $this->roleMechanic = 2;
     }
 
-    public function guardar(Request $request)
-    {
-    }
 
     public function create_detail_pay($params)
     {
@@ -52,8 +54,6 @@ class Rol_PagoController
         $detail = null;
         //Verify hour most 8 and mechanic
         if ($user->rol_id == $this->roleMechanic) {
-            // var_dump($hour);    die();
-
             if ($hour > $this->hourLaborable) {
 
                 $diff = ($hour - $this->hourLaborable);
@@ -78,7 +78,8 @@ class Rol_PagoController
 
         $response = [
             'status' => true,
-            'mensaje' => 'Detail hour generated !!'
+            'mensajes' => 'Detail hour generated !!',
+            'data' => $detail
         ];
 
         echo json_encode($response);

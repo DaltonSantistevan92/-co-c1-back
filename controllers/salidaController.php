@@ -51,11 +51,14 @@ class SalidaController{
                     //Llamar a método para crear un detalle pago en base a la salida
                     $rolePayCtrl = new Rol_PagoController();
                     $rolePayCtrl->create_detail_pay($entradaUsuario->clave);
+                    
+
                     //metod->algo($clave);
 
                     $response = [
                         'status' => true,
                         'mensaje' => 'Salida registrada de ' . $usuario->persona->nombres,
+                        
                     ];
 
                 }
