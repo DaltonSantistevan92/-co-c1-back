@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Facades\DB;
+
 require_once 'app/cors.php';
 require_once 'app/request.php';
 require_once 'app/helper.php';
@@ -704,13 +706,95 @@ class OrdenController
         }
 
         
-
         echo json_encode($data);
         echo json_encode($dataServicio_id);
         
-
     }
 
-    
+    public function proyeccion($params){
 
+        $inicio = $params['inicio'];
+        $fin = $params['fin'];
+        $temporalidad = $params['temporalidad'];
+        $ordenes = false;
+
+        if(intval($temporalidad) == 1){     //Por día
+            $sql = "SELECT id, (total) as total, fecha FROM `orden` WHERE estado_orden_id = 3 AND pagado = 'S' AND fecha BETWEEN '2021-10-01' AND '2022-02-07';";
+            
+        }else
+        if(intval($temporalidad) == 2){     //Por mes
+            $sql = "SELECT id, SUM(total) as total, fecha FROM orden o WHERE estado_orden_id = 3 AND pagado = 'S' AND fecha BETWEEN '2021-10-01' AND '2022-02-07'
+            GROUP BY EXTRACT(YEAR_MONTH FROM o.fecha);";
+
+        }else{                              //Por año
+            $sql = "SELECT id, SUM(total) as total, fecha FROM orden o WHERE estado_orden_id = 3 AND pagado = 'S' AND fecha BETWEEN '2021-10-01' AND '2022-02-07'
+            GROUP BY EXTRACT(YEAR FROM o.fecha);";
+        }
+
+        $array = $this->conexion->database::select($sql);
+
+        //Data lineal
+        $data = []; $xProm = 0; $yProm = 0; $n = count($array); $i = 1;
+        $sumXY = 0; $sumX2 = 0; $margen = 0.5;
+
+        foreach($array as $d){
+            $data[] = $d->total;    //Y
+            $xProm += $i;
+            $yProm += $d->total;
+
+            $xy = $i * $d->total;
+            $x2 = pow($i, 2);
+
+            $sumXY += $xy;
+            $sumX2 += $x2;
+            $i++;
+        }
+
+        $xProm = $xProm / $n;   $yProm = $yProm / $n;
+        
+        $b = (($sumXY) - ($n * $xProm * $yProm)) / (($sumX2) - ($n * $xProm * $xProm));
+        $a = $yProm - ($b * $xProm);
+
+        //Evaluar mínimo y máximo 
+        $fx1 = $a + $b * $data[0];
+        $fxn = $a + $b * $data[count($data) - 1];
+
+
+        $dataGeneral = [
+            'data' => [
+                'datos' => $data,    //Dispersión,
+                'puntos' => [
+                    'inicio' => [
+                        'x' => 1, 'y' => $fx1
+                    ],
+                    'fin' => [
+                        'x' => count($array) , 'y' =>  $fxn
+                    ]
+                ]
+            ],
+            'constantes' => [
+                'a' => $a,
+                'b' => $b
+            ],
+            'promedios' => [
+                'x' => $xProm,
+                'y' => $yProm 
+            ],
+            'ecuacion' => [
+                'f(x)' => $a.' + ('.$b.')(x)',
+                'signo' => ($b > 0) ? '+': '-',
+                'margen' => [
+                    'x' => [
+                        'minimo' => 1 - $margen,
+                        'maximo' => count($array) + $margen
+                    ],
+                    'y' => [
+                        'minimo' => 0
+                    ]
+                ]
+            ]
+        ];
+
+        echo json_encode($dataGeneral);
+    }   
 }
