@@ -305,7 +305,7 @@ class VehiculoController
         echo json_encode($response);
     }
 
-    public function buscarVehiculo($params)
+    public function Vehiculo($params)
     {
         $this->cors->corsJson();
         $texto = ucfirst($params['texto']);
