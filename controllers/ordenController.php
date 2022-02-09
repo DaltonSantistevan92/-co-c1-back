@@ -735,10 +735,11 @@ class OrdenController
 
         //Data lineal
         $data = []; $xProm = 0; $yProm = 0; $n = count($array); $i = 1;
-        $sumXY = 0; $sumX2 = 0; $margen = 0.5;
+        $sumXY = 0; $sumX2 = 0; $margen = 0.5;  $fecha = [];
 
         foreach($array as $d){
             $data[] = $d->total;    //Y
+            $fecha[] = $d->fecha;
             $xProm += $i;
             $yProm += $d->total;
 
@@ -756,19 +757,24 @@ class OrdenController
         $a = $yProm - ($b * $xProm);
 
         //Evaluar mínimo y máximo 
-        $fx1 = $a + $b * $data[0];
-        $fxn = $a + $b * $data[count($data) - 1];
-
+        $fx1 = $a + $b * 1;
+        $fxn = $a + $b * count($data);
+        $proyeccion = $a + $b * (count($data) + 1);
 
         $dataGeneral = [
             'data' => [
                 'datos' => $data,    //Dispersión,
+                'fecha' => $fecha,
                 'puntos' => [
                     'inicio' => [
                         'x' => 1, 'y' => $fx1
                     ],
                     'fin' => [
                         'x' => count($array) , 'y' =>  $fxn
+                    ],
+                    'proyeccion' => [
+                        'x' => count($data) + 1,
+                        'y' => $proyeccion
                     ]
                 ]
             ],
